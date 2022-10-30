@@ -100,7 +100,7 @@ class Permissions:
             4: "Geniuses and up",
             5: "Moderators and up",
             6: "Administrators and up",
-            7: "Guild owner (Aaron) and up",
+            7: "Guild owner and up",
             9: "Bot owner",
             10: "Bot owner",
         }

@@ -274,7 +274,7 @@ class Filter(commands.Cog):
     @cached(ttl=3600)
     async def fetch_cij_or_news_database(self):
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://raw.githubusercontent.com/DiscordCosmo/CIJOrNewsFilter/main/database.json") as resp:
+            async with session.get("https://raw.githubusercontent.com/DiscordGIR/CIJOrNewsFilter/main/database.json") as resp:
                 if resp.status == 200:
                     data = await resp.text()
                     return json.loads(data)
