@@ -312,10 +312,8 @@ class Filter(commands.Cog):
             embed.description = f"Please keep support or jailbreak related messages in the appropriate channels. Thanks!"
             embed.set_footer(
                 text="This action was performed automatically. Please disregard if incorrect.")
-            view.add_item(discord.ui.Button(label='Genius Bar', emoji="<:Genius:947545923028922448>",
-                                            url=f"https://discord.com/channels/349243932447604736/688124678707216399", style=discord.ButtonStyle.url))
-            view.add_item(discord.ui.Button(label='Jailbreak Channel', emoji="<:Channel2:947546361715388417>",
-                                            url=f"https://discord.com/channels/349243932447604736/688122301975363591", style=discord.ButtonStyle.url))
+            view.add_item(discord.ui.Button(label='Support', emoji="<:Genius:947545923028922448>",
+                                            url=f"https://discordapp.com/channels/1028398973452570725/1028730487700738130", style=discord.ButtonStyle.url))
             res = await message.reply(embed=embed, view=view, delete_after=20)
         elif intent_news_triggered and subject_and_word_in_message:
             embed = discord.Embed(color=discord.Color.orange())
