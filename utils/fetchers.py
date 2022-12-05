@@ -1,8 +1,10 @@
 import json
 import urllib
-
+import uuid
 import aiohttp
+
 from aiocache import cached
+from utils.config import cfg
 
 client_session = None
 
@@ -108,6 +110,59 @@ async def canister_search_repo(query):
                 return None
         else:
             return None
+
+
+async def chatgpt_request(prompt, context="", conversation=None):
+    """Sends ChatGPT a prompt
+
+    Parameters
+    ----------
+    prompt : str
+        "Prompt to send to ChatGPT"
+
+    Returns
+    -------
+    response
+        "Response from ChatGPT"
+
+    """
+
+    headers = {
+        'Authorization': f'Bearer {cfg.openai_auth_token}',
+    }
+
+    json_data = {
+        'action': 'next',
+        'conversation_id': conversation,
+        'messages': [
+            {
+                'id': str(uuid.uuid4()),
+                'role': 'user',
+                'content': {
+                    'content_type': 'text',
+                    'parts': [
+                        prompt,
+                    ],
+                },
+            },
+        ],
+        'parent_message_id': context,
+        'model': 'text-davinci-002-render',
+    }
+
+    async with client_session.post('https://chat.openai.com/backend-api/conversation', headers=headers, json=json_data) as resp:
+        if resp.status == 200:
+            response = await resp.text()
+
+            return json.loads(response.splitlines()[-4].replace("data: ", ""))
+        else:
+            response = await resp.text()
+            err = {
+                'status': 'error',
+                'error': response
+            }
+
+            return json.loads(json.dumps(err, indent=4))
 
 
 @cached(ttl=3600)

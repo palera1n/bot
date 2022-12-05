@@ -16,6 +16,7 @@ from utils import (CosmoContext, cfg, get_dstatus_components,
 from utils.framework import (MONTH_MAPPING, Duration, gatekeeper,
                              give_user_birthday_role, mod_and_up, whisper)
 from utils.framework.transformers import ImageAttachment
+from utils.fetchers import chatgpt_request
 from utils.views import (PFPButton, PFPView, date_autocompleter,
                          rule_autocomplete)
 
@@ -55,7 +56,8 @@ class Misc(commands.Cog):
         try:
             ctx.tasks.schedule_reminder(ctx.author.id, reminder, time)
         except:
-            raise commands.BadArgument("Could not schedule reminder, you probably have too many reminders already!")
+            raise commands.BadArgument(
+                "Could not schedule reminder, you probably have too many reminders already!")
 
         await ctx.send_success(title="Reminder set", description=f"We'll remind you {discord.utils.format_dt(time, style='R')}", delete_after=5)
 
@@ -312,6 +314,19 @@ __**Last outage information**__
         """, color=color)
         embed.set_footer(text="Powered by discordstatus.com")
         await ctx.respond(embed=embed, ephemeral=ctx.whisper)
+
+    """ @app_commands.guilds(cfg.guild_id)
+    @app_commands.command(description="Ask ChatGPT something!")
+    @app_commands.describe(prompt="Prompt to send to ChatGPT")
+    @transform_context
+    async def chatgpt(self, ctx: CosmoContext, prompt: str):
+        await ctx.defer(ephemeral=False)
+
+        res = await chatgpt_request(prompt)
+        if res is None:
+            raise Exception("Invalid response recieved from ChatGPT!")
+
+        await ctx.respond(res["message"]["content"]["parts"][0], ephemeral=False) """
 
 
 async def setup(bot):

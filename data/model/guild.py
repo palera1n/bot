@@ -34,6 +34,7 @@ class Guild(mongoengine.Document):
     channel_reaction_roles = mongoengine.IntField()
     channel_reports = mongoengine.IntField()
     channel_music = mongoengine.IntField()
+    channel_chatgpt = mongoengine.IntField()
 
     emoji_logging_webhook = mongoengine.StringField()
     locked_channels = mongoengine.ListField(default=[])
