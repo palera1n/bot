@@ -54,8 +54,9 @@ class Config:
         if self.open_ai_token is None:
             logger.warning("`/memegen aitext` will not be enabled.")
 
-        self.openai_auth_token = os.environ.get("OPENAI_AUTH_TOKEN")
-        if self.openai_auth_token is None:
+        self.chatgpt_auth_token = os.environ.get("CHATGPT_AUTH_TOKEN")
+        self.chatgpt_csrf_token = os.environ.get("CHATGPT_CSRF_TOKEN")
+        if self.chatgpt_csrf_token is None:
             logger.warning("`chatgpt` channel will not be enabled.")
 
         self.markov_enabled = os.environ.get("MARKOV_ENABLED")

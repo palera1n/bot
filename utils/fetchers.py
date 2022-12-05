@@ -2,7 +2,9 @@ import json
 import urllib
 import uuid
 import aiohttp
+import random
 
+from http.cookiejar import MozillaCookieJar
 from aiocache import cached
 from utils.config import cfg
 
@@ -112,6 +114,35 @@ async def canister_search_repo(query):
             return None
 
 
+async def chatgpt_refresh_token():
+    """Refreshes your ChatGPT token
+
+    Returns
+    -------
+    response
+        "ChatGPT auth token"
+    """
+
+    cookies = {
+        '__Host-next-auth.csrf-token': random.choice(cfg.chatgpt_csrf_token.split("$NEWACCT$")),
+        '__Secure-next-auth.session-token': random.choice(cfg.chatgpt_auth_token.split("$NEWACCT$")),
+        '__Secure-next-auth.callback-url': 'https%3A%2F%2Fchat.openai.com%2F',
+    }
+
+    async with client_session.get('https://chat.openai.com/api/auth/session', cookies=cookies) as resp:
+        if resp.status == 200:
+            response = await resp.text()
+            j = json.loads(response)
+
+            try:
+                if j["error"]:
+                    return chatgpt_refresh_token()
+            except KeyError:
+                return j["accessToken"]
+        else:
+            return None
+
+
 async def chatgpt_request(prompt, context="", conversation=None):
     """Sends ChatGPT a prompt
 
@@ -127,8 +158,10 @@ async def chatgpt_request(prompt, context="", conversation=None):
 
     """
 
+    token = await chatgpt_refresh_token()
+
     headers = {
-        'Authorization': f'Bearer {cfg.openai_auth_token}',
+        'Authorization': f'Bearer {token}',
     }
 
     json_data = {
