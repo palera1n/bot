@@ -10,6 +10,7 @@ from dotenv.main import load_dotenv
 
 load_dotenv()
 
+
 class Formatter(logging.Formatter):
     def __init__(self):
         self.style_list = {
@@ -69,7 +70,7 @@ class WebhookLogger(logging.Handler):
         super().__init__(self.level)
         self.webhook_url = os.environ.get("LOGGING_WEBHOOK_URL")
         self.record_formatter = logging.Formatter()
-        
+
     def prefixcalc(self, levelname: str):
         if levelname == 'DEBUG':
             return '```bash#| '
@@ -94,7 +95,7 @@ class WebhookLogger(logging.Handler):
 
     def emit(self, record: logging.LogRecord):
         self.send(self.record_formatter.format(record), record)
-            
+
     def send(self, formatted, record):
         if self.webhook_url is None:
             return
@@ -111,26 +112,34 @@ class WebhookLogger(logging.Handler):
 
             try:
                 loop = asyncio.get_event_loop()
-                asyncio.ensure_future(post_content(self.webhook_url, message_body))
+                asyncio.ensure_future(post_content(
+                    self.webhook_url, message_body))
             except RuntimeError:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
-                loop.run_until_complete(post_content(self.webhook_url, message_body))
+                loop.run_until_complete(post_content(
+                    self.webhook_url, message_body))
+
 
 async def post_content(webhook_url, message_body):
     async with aiohttp.ClientSession() as session:
-        the_webhook: discord.Webhook = discord.Webhook.from_url(webhook_url, session=session)
+        the_webhook: discord.Webhook = discord.Webhook.from_url(
+            webhook_url, session=session)
         try:
             await the_webhook.send(**message_body)
         except Exception:
             pass
 
+
 class Logger:
     def __init__(self):
         parser = argparse.ArgumentParser()
-        parser.add_argument('--disable-discord-logs', help='Disables Discord logging.', action='store_true')
-        parser.add_argument('--disable-scheduler-logs', help='Disables scheduler logs.', action='store_true')
-        parser.add_argument('--disable-webhook-logging', help='Disables logging to the webhook.', action='store_true')
+        parser.add_argument('--disable-discord-logs',
+                            help='Disables Discord logging.', action='store_true')
+        parser.add_argument('--disable-scheduler-logs',
+                            help='Disables scheduler logs.', action='store_true')
+        parser.add_argument('--disable-webhook-logging',
+                            help='Disables logging to the webhook.', action='store_true')
 
         args = parser.parse_args()
 
@@ -153,5 +162,6 @@ class Logger:
         self.logger.addHandler(self.HNDLR)
         if not args.disable_webhook_logging:
             self.logger.addHandler(WebhookLogger())
-        
+
+
 logger = Logger().logger

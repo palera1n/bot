@@ -4,7 +4,6 @@ import uuid
 import aiohttp
 import random
 
-from http.cookiejar import MozillaCookieJar
 from aiocache import cached
 from utils.config import cfg
 
@@ -114,35 +113,6 @@ async def canister_search_repo(query):
             return None
 
 
-async def chatgpt_refresh_token():
-    """Refreshes your ChatGPT token
-
-    Returns
-    -------
-    response
-        "ChatGPT auth token"
-    """
-
-    cookies = {
-        '__Host-next-auth.csrf-token': random.choice(cfg.chatgpt_csrf_token.split("$NEWACCT$")),
-        '__Secure-next-auth.session-token': random.choice(cfg.chatgpt_auth_token.split("$NEWACCT$")),
-        '__Secure-next-auth.callback-url': 'https%3A%2F%2Fchat.openai.com%2F',
-    }
-
-    async with client_session.get('https://chat.openai.com/api/auth/session', cookies=cookies) as resp:
-        if resp.status == 200:
-            response = await resp.text()
-            j = json.loads(response)
-
-            try:
-                if j["error"]:
-                    return chatgpt_refresh_token()
-            except KeyError:
-                return j["accessToken"]
-        else:
-            return None
-
-
 async def chatgpt_request(prompt, context="", conversation=None):
     """Sends ChatGPT a prompt
 
@@ -155,39 +125,24 @@ async def chatgpt_request(prompt, context="", conversation=None):
     -------
     response
         "Response from ChatGPT"
-
     """
 
-    token = await chatgpt_refresh_token()
-
     headers = {
-        'Authorization': f'Bearer {token}',
+        'Authorization': f'Bearer {cfg.chatgpt_api_key}',
     }
 
     json_data = {
-        'action': 'next',
-        'conversation_id': conversation,
-        'messages': [
-            {
-                'id': str(uuid.uuid4()),
-                'role': 'user',
-                'content': {
-                    'content_type': 'text',
-                    'parts': [
-                        prompt,
-                    ],
-                },
-            },
-        ],
-        'parent_message_id': context,
-        'model': 'text-davinci-002-render',
+        'id': str(uuid.uuid4()),
+        'conversation': conversation,
+        'context': context,
+        'prompt': prompt
     }
 
-    async with client_session.post('https://chat.openai.com/backend-api/conversation', headers=headers, json=json_data) as resp:
+    async with client_session.post(f'{cfg.chatgpt_api_endpoint}/prompt', headers=headers, json=json_data) as resp:
         if resp.status == 200:
             response = await resp.text()
 
-            return json.loads(response.splitlines()[-4].replace("data: ", ""))
+            return json.loads(response)
         else:
             response = await resp.text()
             err = {
@@ -198,7 +153,7 @@ async def chatgpt_request(prompt, context="", conversation=None):
             return json.loads(json.dumps(err, indent=4))
 
 
-@cached(ttl=3600)
+@ cached(ttl=3600)
 async def canister_fetch_repos():
     async with client_session.get('https://api.canister.me/v1/community/repositories/search?ranking=1,2,3,4,5') as resp:
         if resp.status == 200:
@@ -208,7 +163,7 @@ async def canister_fetch_repos():
         return None
 
 
-@cached(ttl=3600)
+@ cached(ttl=3600)
 async def fetch_scam_urls():
     async with client_session.get("https://raw.githubusercontent.com/SlimShadyIAm/Anti-Scam-Json-List/main/antiscam.json") as resp:
         if resp.status == 200:
