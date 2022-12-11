@@ -6,7 +6,7 @@ import io
 
 from utils import (CosmoContext, cfg, get_dstatus_components,
                    get_dstatus_incidents, transform_context)
-from utils.fetchers import chatgpt_request
+from utils.fetchers import chatgpt_request, chatgpt_refresh
 from utils.framework import (MONTH_MAPPING, Duration, gatekeeper,
                              give_user_birthday_role, mod_and_up, whisper, guild_owner_and_up)
 
@@ -87,6 +87,18 @@ class ChatGPT(commands.Cog):
         self.conversation.clear()
 
         await ctx.send_success("Reset everyone's ChatGPT context!")
+
+    @guild_owner_and_up()
+    @chatgpt.command(description="Refresh the OpenAI auth token")
+    @transform_context
+    async def refresh(self, ctx: CosmoContext):
+        ctx.whisper = True
+        await ctx.defer(ephemeral=True)
+
+        if await chatgpt_refresh() == 200:
+            await ctx.send_success("Refreshed the OpenAI auth token!")
+        else:
+            await ctx.send_error(f"Whoops! An invalid response was recieved from the ChatGPT proxy!")
 
 
 async def setup(bot):

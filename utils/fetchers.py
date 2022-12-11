@@ -113,6 +113,23 @@ async def canister_search_repo(query):
             return None
 
 
+async def chatgpt_refresh():
+    """Refreshes the OpenAI access token
+
+    Returns
+    -------
+    status
+        "HTTP status code of request"
+    """
+
+    headers = {
+        'Authorization': f'Bearer {cfg.chatgpt_api_key}',
+    }
+
+    async with client_session.get(f'{cfg.chatgpt_api_endpoint}/refresh_auth', headers=headers) as resp:
+        return resp.status
+
+
 async def chatgpt_request(prompt, context="", conversation=None):
     """Sends ChatGPT a prompt
 
@@ -153,7 +170,7 @@ async def chatgpt_request(prompt, context="", conversation=None):
             return json.loads(json.dumps(err, indent=4))
 
 
-@ cached(ttl=3600)
+@cached(ttl=3600)
 async def canister_fetch_repos():
     async with client_session.get('https://api.canister.me/v1/community/repositories/search?ranking=1,2,3,4,5') as resp:
         if resp.status == 200:
@@ -163,7 +180,7 @@ async def canister_fetch_repos():
         return None
 
 
-@ cached(ttl=3600)
+@cached(ttl=3600)
 async def fetch_scam_urls():
     async with client_session.get("https://raw.githubusercontent.com/SlimShadyIAm/Anti-Scam-Json-List/main/antiscam.json") as resp:
         if resp.status == 200:
