@@ -37,7 +37,7 @@ class CIJMenu(Menu):
             self.add_item(button)
 
         built_in_buttons = [self.previous,
-                    self.pause, self.next]
+                            self.pause, self.next]
         for button in built_in_buttons:
             self.add_item(button)
 
@@ -57,16 +57,19 @@ class BypassMenu(Menu):
 
         if bypass.get("guide") is not None:
             extra_buttons.append(
-                discord.ui.Button(label="View Guide", style=discord.ButtonStyle.link, url=bypass.get("guide"))
+                discord.ui.Button(
+                    label="View Guide", style=discord.ButtonStyle.link, url=bypass.get("guide"))
             )
         if bypass.get("repository") is not None:
             extra_buttons.append(
-                discord.ui.Button(label="View Repository", style=discord.ButtonStyle.link, url=bypass.get("repository").get("uri").replace("beerpsi.me/sharerepo", "sharerepo.stkc.win"))
+                discord.ui.Button(label="View Repository", style=discord.ButtonStyle.link, url=bypass.get(
+                    "repository").get("uri").replace("beerpsi.me/sharerepo", "sharerepo.stkc.win"))
             )
 
         if app.get("uri") is not None:
             extra_buttons.append(
-                discord.ui.Button(label="View in App Store", emoji="<:appstore:392027597648822281>", style=discord.ButtonStyle.link, url=app.get("uri"))
+                discord.ui.Button(label="View in App Store", emoji="<:icons_store:875395222673186817>",
+                                  style=discord.ButtonStyle.link, url=app.get("uri"))
             )
 
         for button in self.extra_buttons:

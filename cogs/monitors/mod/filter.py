@@ -312,7 +312,7 @@ class Filter(commands.Cog):
             embed.description = f"Please keep support or jailbreak related messages in the appropriate channels. Thanks!"
             embed.set_footer(
                 text="This action was performed automatically. Please disregard if incorrect.")
-            view.add_item(discord.ui.Button(label='Support', emoji="<:Genius:947545923028922448>",
+            view.add_item(discord.ui.Button(label='Support', emoji="<:icons_bulb:882595243579559958>",
                                             url=f"https://discordapp.com/channels/1028398973452570725/1028730487700738130", style=discord.ButtonStyle.url))
             res = await message.reply(embed=embed, view=view, delete_after=20)
         elif intent_news_triggered and subject_and_word_in_message:
@@ -327,9 +327,9 @@ class Filter(commands.Cog):
             embed.set_footer(
                 text="This action was performed automatically. Please disregard if incorrect.")
             view = discord.ui.View()
-            view.add_item(discord.ui.Button(label='Get Started', emoji="<:Guide:947350624385794079>",
+            view.add_item(discord.ui.Button(label='Get Started', emoji="<:icons_book:867656825545424898>",
                                             url=f"https://ios.cfw.guide/get-started/#required-reading", style=discord.ButtonStyle.url))
-            view.add_item(discord.ui.Button(label='Jailbreak Chart', emoji="<:Search2:947525874297757706>",
+            view.add_item(discord.ui.Button(label='Jailbreak Chart', emoji="<:icons_search:859424401723883560>",
                                             url=f"https://appledb.dev/", style=discord.ButtonStyle.url))
 
             await message.reply(embed=embed, view=view, delete_after=20)

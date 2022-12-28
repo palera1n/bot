@@ -51,7 +51,7 @@ class RepoWatcher(commands.Cog):
                                         url=f"https://repos.slim.rocks/repo/?repoUrl={potential_repo}&manager=sileo", style=discord.ButtonStyle.url))
         view.add_item(discord.ui.Button(label='Add Repo to Zebra', emoji="<:Zeeb:959129860603801630>",
                                         url=f"https://repos.slim.rocks/repo/?repoUrl={potential_repo}&manager=zebra", style=discord.ButtonStyle.url))
-        view.add_item(discord.ui.Button(label='Other Package Managers', emoji="<:Add:947354227171262534>",
+        view.add_item(discord.ui.Button(label='Other Package Managers', emoji="<:icons_linkadd:865572290065072128>",
                                         url=f"https://repos.slim.rocks/repo/?repoUrl={potential_repo}", style=discord.ButtonStyle.url))
 
         await message.reply(file=discord.File("data/images/transparent1x1.png"), view=view, mention_author=False)
@@ -122,7 +122,7 @@ class Sileo(commands.Cog):
                     embed = discord.Embed(
                         title=":(\nI couldn't find that package", color=discord.Color.orange())
                     embed.description = f"You have sent a link to a package, you can use the button below to open it directly in Sileo."
-                    view.add_item(discord.ui.Button(label='View Package in Sileo', emoji="<:Search2:947525874297757706>",
+                    view.add_item(discord.ui.Button(label='View Package in Sileo', emoji="<:icons_search:859424401723883560>",
                                                     url=f"https://sharerepo.stkc.win/v3/?pkgid={urlscheme.group(1)}", style=discord.ButtonStyle.url))
                     await message.reply(embed=embed, view=view, mention_author=False)
                     return
@@ -141,11 +141,11 @@ class Sileo(commands.Cog):
                 embed.description = f"You have sent a link to a package, you can use the button below to open it directly in Sileo."
                 icon = canister.get('packageIcon')
                 depiction = canister.get('depiction')
-                view.add_item(discord.ui.Button(label='View Package in Sileo', emoji="<:Search2:947525874297757706>",
+                view.add_item(discord.ui.Button(label='View Package in Sileo', emoji="<:icons_search:859424401723883560>",
                                                 url=f"https://sharerepo.stkc.win/v3/?pkgid={urlscheme.group(1)}", style=discord.ButtonStyle.url))
 
                 if depiction is not None:
-                    view.add_item(discord.ui.Button(label='View Depiction', emoji="<:Depiction:947358756033949786>", url=canister.get(
+                    view.add_item(discord.ui.Button(label='View Depiction', emoji="<:icons_globe:859424401971609600>", url=canister.get(
                         'depiction'), style=discord.ButtonStyle.url))
 
                 if icon is not None:

@@ -20,7 +20,7 @@ platforms = {
     },
     "youtube": {
         "name": "YouTube",
-        "emote": "<:Music_YouTube:958786388457840700>"
+        "emote": "<:icons_youtube:861863653962416128>"
     },
 }
 

@@ -1,20 +1,13 @@
 import discord
 
-import re
-from itertools import takewhile
 
-
-def derive_label(string):
-    starter = str("".join(list(takewhile(lambda x: x.islower(), string))))
-
-    middle = " ".join(re.findall(
-        r'[A-Z0-9](?:[a-z0-9]+|[A-Z0-9]*(?=[A-Z0-9]|$))', string))
-    return f"{starter}{middle}"
+def get_label(label):
+    return str(label).replace("Pronouns: ", "")
 
 
 class ReactionRoleButton(discord.ui.Button):
     def __init__(self, role: discord.Role, emoji: discord.Emoji):
-        super().__init__(label=derive_label(role.name),
+        super().__init__(label=get_label(role.name),
                          style=discord.ButtonStyle.primary, emoji=emoji, custom_id=str(role.id))
 
     async def callback(self, interaction: discord.Interaction):

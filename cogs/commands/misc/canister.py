@@ -128,7 +128,7 @@ class Canister(commands.Cog):
                                       url=f'https://repos.slim.rocks/repo/?repoUrl={this_repo}&manager=sileo', disabled=True, style=discord.ButtonStyle.url, row=1),
                     discord.ui.Button(label='Cannot add default repo', emoji="<:Zeeb:959129860603801630>",
                                       url=f'https://repos.slim.rocks/repo/?repoUrl={this_repo}&manager=zebra', disabled=True, style=discord.ButtonStyle.url, row=1),
-                    discord.ui.Button(label='Cannot add default repo', emoji="<:Add:947354227171262534>",
+                    discord.ui.Button(label='Cannot add default repo', emoji="<:icons_linkadd:865572290065072128>",
                                       url=f'https://repos.slim.rocks/repo/?repoUrl={this_repo}', style=discord.ButtonStyle.url, disabled=True, row=1)
                 ]]
                 break
@@ -138,7 +138,7 @@ class Canister(commands.Cog):
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={this_repo}&manager=sileo', style=discord.ButtonStyle.url, row=1),
                 discord.ui.Button(label='Add Repo to Zebra', emoji="<:Zeeb:959129860603801630>",
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={this_repo}&manager=zebra', style=discord.ButtonStyle.url, row=1),
-                discord.ui.Button(label='Other Package Managers', emoji="<:Add:947354227171262534>",
+                discord.ui.Button(label='Other Package Managers', emoji="<:icons_linkadd:865572290065072128>",
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={this_repo}', style=discord.ButtonStyle.url, row=1)
             ]]
 

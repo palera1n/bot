@@ -116,7 +116,7 @@ class TweakMenu(Menu):
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={self.ctx.repo}&manager=sileo', style=discord.ButtonStyle.url, row=1),
                 discord.ui.Button(label='Add Repo to Zebra', emoji="<:zebra:911433583032422420>",
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={self.ctx.repo}&manager=zebra', style=discord.ButtonStyle.url, row=1),
-                discord.ui.Button(label='Other Package Managers', emoji="<:Add:947354227171262534>",
+                discord.ui.Button(label='Other Package Managers', emoji="<:icons_linkadd:865572290065072128>",
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={self.ctx.repo}', style=discord.ButtonStyle.url, row=1)
             ]
         else:
@@ -125,12 +125,12 @@ class TweakMenu(Menu):
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={self.ctx.repo}&manager=sileo', disabled=True, style=discord.ButtonStyle.url, row=1),
                 discord.ui.Button(label='Cannot add default repo', emoji="<:zebra:911433583032422420>",
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={self.ctx.repo}&manager=zebra', disabled=True, style=discord.ButtonStyle.url, row=1),
-                discord.ui.Button(label='Cannot add default repo', emoji="<:Add:947354227171262534>",
+                discord.ui.Button(label='Cannot add default repo', emoji="<:icons_linkadd:865572290065072128>",
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={self.ctx.repo}', style=discord.ButtonStyle.url, disabled=True, row=1)
             ]
         if self.ctx.depiction:
             extra_buttons.insert(0,
-                                 discord.ui.Button(label='View Depiction', emoji="<:Depiction:947358756033949786>",
+                                 discord.ui.Button(label='View Depiction', emoji="<:icons_globe:859424401971609600>",
                                                    url=self.ctx.depiction, style=discord.ButtonStyle.url, row=1),
                                  )
 
@@ -240,7 +240,7 @@ class TweakDropdown(discord.ui.Select):
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={repo}&manager=sileo', style=discord.ButtonStyle.url),
                 discord.ui.Button(label='Add Repo to Zebra', emoji="<:zebra:911433583032422420>",
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={repo}&manager=zebra', style=discord.ButtonStyle.url),
-                discord.ui.Button(label='Other Package Managers', emoji="<:Add:947354227171262534>",
+                discord.ui.Button(label='Other Package Managers', emoji="<:icons_linkadd:865572290065072128>",
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={repo}', style=discord.ButtonStyle.url)
             ]
         else:
@@ -249,12 +249,12 @@ class TweakDropdown(discord.ui.Select):
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={repo}&manager=sileo', disabled=True, style=discord.ButtonStyle.url),
                 discord.ui.Button(label='Cannot add default repo', emoji="<:zebra:911433583032422420>",
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={repo}&manager=zebra', disabled=True, style=discord.ButtonStyle.url),
-                discord.ui.Button(label='Cannot add default repo', emoji="<:Add:947354227171262534>",
+                discord.ui.Button(label='Cannot add default repo', emoji="<:icons_linkadd:865572290065072128>",
                                   url=f'https://repos.slim.rocks/repo/?repoUrl={repo}', disabled=True, style=discord.ButtonStyle.url)
             ]
         if depiction is not None:
             extra_buttons.insert(0,
-                                 discord.ui.Button(label='View Depiction', emoji="<:Depiction:947358756033949786>",
+                                 discord.ui.Button(label='View Depiction', emoji="<:icons_globe:859424401971609600>",
                                                    url=depiction, style=discord.ButtonStyle.url),
                                  )
         return extra_buttons
@@ -293,7 +293,7 @@ class BypassMenu(Menu):
 
         if app.get("uri") is not None:
             extra_buttons.append(
-                discord.ui.Button(label="View in App Store", emoji="<:appstore:392027597648822281>",
+                discord.ui.Button(label="View in App Store", emoji="<:icons_store:875395222673186817>",
                                   style=discord.ButtonStyle.link, url=app.get("uri"))
             )
 
