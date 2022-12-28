@@ -13,7 +13,7 @@ Cosmo is a sophisticated moderation and miscellaneous utilities Discord bot for 
 
 Cosmo is custom made and therefore there is no publicly running bot you can invite to your own server. However, you can self-host it as is or fork the code and modify it to your own requirements!
 
-> See also: [Bloo](https://github.com/DiscordG/Bloo) and [GIR](https://github.com/DiscordGIR/GIR)
+> See also: [Bloo](https://github.com/DiscordGIR/Bloo) and [GIR](https://github.com/DiscordGIR/GIRRewrite)
 
 ---
 
