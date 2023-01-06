@@ -6,6 +6,7 @@ from data.model.guild import Guild
 from data.services.guild_service import guild_service
 from utils.config import cfg
 
+
 class Permissions:
     """A way of calculating a user's permissions.
     Level 0 is everyone.
@@ -15,7 +16,7 @@ class Permissions:
     Level 4 is people with Genius role
     Level 5 is people with Moderator role
     Level 6 is Admins
-    Level 7 is the Guild owner (Aaron)
+    Level 7 is the Guild owner
     Level 9 and 10 is the bot owner
 
     """
@@ -29,7 +30,7 @@ class Permissions:
             Instance of Discord client to look up a user's roles, permissions, etc.
         settings : Settings
             State of the bot
-            
+
         """
 
         the_guild: Guild = guild_service.get_guild()
@@ -99,7 +100,7 @@ class Permissions:
             4: "Geniuses and up",
             5: "Moderators and up",
             6: "Administrators and up",
-            7: "Guild owner (Aaron) and up",
+            7: "Guild owner and up",
             9: "Bot owner",
             10: "Bot owner",
         }
@@ -129,7 +130,7 @@ class Permissions:
         -------
         bool
             True if the user has that level, otherwise False.
-            
+
         """
 
         if self._permissions.get(level) is None:

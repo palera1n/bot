@@ -41,7 +41,7 @@ class Memes(commands.Cog):
         self.memegen_cooldown = CooldownMapping.from_cooldown(
             1, 45, MessageTextBucket.custom)
         self.meme_phrases = ["{user}, have a look at this funny meme! LOL!", "Hey, {user}. Have a look at this knee-slapper!",
-                             "{user}, look at this meme! Just don't show Aaron.", "{user} 😂😂😂😂😭😭😭😭"]
+                             "{user}, look at this meme!", "{user} 😂😂😂😂😭😭😭😭"]
         self.snipe_cache = {}
 
     @app_commands.guilds(cfg.guild_id)
@@ -494,9 +494,11 @@ class Memes(commands.Cog):
 
         content_added = False
         embed = discord.Embed(color=discord.Color.random())
-        embed.set_author(name=f"{last_message.author.display_name} {'edited' if last_message.edited_at == True else 'deleted'} a message", icon_url=last_message.author.display_avatar.url)
+        embed.set_author(name=f"{last_message.author.display_name} {'edited' if last_message.edited_at == True else 'deleted'} a message",
+                         icon_url=last_message.author.display_avatar.url)
         if last_message.content:
-            embed.description = last_message.content[:2000] + "..." if len(last_message.content) > 2000 else last_message.content
+            embed.description = last_message.content[:2000] + "..." if len(
+                last_message.content) > 2000 else last_message.content
             content_added = True
 
         if last_message.attachments:
@@ -506,7 +508,8 @@ class Memes(commands.Cog):
                 content_added = True
 
         if not content_added:
-            raise commands.BadArgument("No suitable message content to send (text or image).")
+            raise commands.BadArgument(
+                "No suitable message content to send (text or image).")
 
         embed.timestamp = last_message.created_at
         embed.set_footer(text=f"Message ID: {last_message.id}")
@@ -539,7 +542,6 @@ class Memes(commands.Cog):
 
         before._edited_timestamp = True
         self.snipe_cache[before.channel.id] = before
-
 
 
 async def setup(bot):

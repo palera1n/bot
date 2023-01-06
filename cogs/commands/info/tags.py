@@ -14,7 +14,6 @@ from utils.framework import (MessageTextBucket, gatekeeper,
 from utils.views import Menu, tags_autocomplete, EditTagModal, TagModal
 
 
-
 def format_tag_page(_, entries, current_page, all_pages):
     embed = discord.Embed(
         title=f'All tags', color=discord.Color.blurple())
@@ -151,15 +150,18 @@ class Tags(commands.Cog):
     @transform_context
     @whisper
     async def taglist(self, ctx: GIRContext):
-        _tags = sorted(guild_service.get_guild().tags, key=lambda tag: tag.name)
+        _tags = sorted(guild_service.get_guild().tags,
+                       key=lambda tag: tag.name)
 
         if len(_tags) == 0:
             raise commands.BadArgument("There are no tags defined.")
 
-        menu = Menu(ctx, _tags, per_page=12, page_formatter=format_tag_page, whisper=ctx.whisper)
+        menu = Menu(ctx, _tags, per_page=12,
+                    page_formatter=format_tag_page, whisper=ctx.whisper)
         await menu.start()
 
-    tags = app_commands.Group(name="tags", description="Interact with tags", guild_ids=[cfg.guild_id])
+    tags = app_commands.Group(
+        name="tags", description="Interact with tags", guild_ids=[cfg.guild_id])
 
     @genius_or_submod_and_up()
     @tags.command(description="Create a tag")
