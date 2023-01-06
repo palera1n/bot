@@ -40,9 +40,9 @@ class ReportActionReason(ui.View):
     async def rule_one(self, interaction: discord.Interaction, button: ui.Button):
         await self.modaction_callback(interaction, "rule 1")
 
-    @ui.button(label="rule 5", style=discord.ButtonStyle.primary)
+    @ui.button(label="icloud bypass", style=discord.ButtonStyle.primary)
     async def rule_five(self, interaction: discord.Interaction, button: ui.Button):
-        await self.modaction_callback(interaction, "rule 5")
+        await self.modaction_callback(interaction, "icloud bypass")
 
     @ui.button(label="ads", style=discord.ButtonStyle.primary)
     async def ads(self, interaction: discord.Interaction, button: ui.Button):
@@ -151,11 +151,11 @@ class WarnView(ui.View):
         await warn(self.ctx, self.target_member, interaction.user, 50, "filter bypass")
         self.stop()
 
-    @ui.button(label="rule 5", style=discord.ButtonStyle.primary)
+    @ui.button(label="icloud bypass", style=discord.ButtonStyle.primary)
     async def rule5(self, interaction: discord.Interaction, button: ui.Button):
         await self.ctx.send_success("Okay...")
         self.ctx.interaction = interaction
-        await warn(self.ctx, self.target_member, interaction.user, 50, "rule 5")
+        await warn(self.ctx, self.target_member, interaction.user, 50, "icloud bypass")
         self.stop()
 
     @ui.button(label="Other...", style=discord.ButtonStyle.primary)
