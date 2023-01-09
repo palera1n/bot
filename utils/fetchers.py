@@ -58,6 +58,57 @@ async def get_dstatus_incidents():
             return incidents
 
 
+async def fetch_remote_json(url):
+    """Get a JSON file from a URL
+
+    Parameters
+    ----------
+    url : str
+        "URL of the JSON file"
+
+    Returns
+    -------
+    json
+        "Remote JSON file"
+
+    """
+
+    async with client_session.get(url) as resp:
+        if resp.status == 200:
+            text = await resp.text()
+            try:
+                if text.startswith('{"bug_type":'):
+                    return json.loads(text.split("\n", 1)[1])
+                else:
+                    return json.loads(text)
+            except:
+                return None
+        else:
+            return None
+
+
+async def fetch_remote_file(url):
+    """Get a file from a URL
+
+    Parameters
+    ----------
+    url : str
+        "URL of the file"
+
+    Returns
+    -------
+    json
+        "Remote file"
+
+    """
+
+    async with client_session.get(url) as resp:
+        if resp.status == 200:
+            return await resp.text()
+        else:
+            return None
+
+
 async def canister_search_package(query):
     """Search for a tweak in Canister's catalogue
 

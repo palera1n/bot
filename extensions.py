@@ -28,5 +28,6 @@ initial_extensions = [
     "cogs.monitors.utils.applenews",
     "cogs.monitors.utils.birthday",
     "cogs.monitors.utils.jailbreak_monitors",
+    "cogs.monitors.utils.logparsing",
     "cogs.monitors.utils.xp",
 ]
