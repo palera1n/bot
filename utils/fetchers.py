@@ -125,10 +125,10 @@ async def canister_search_package(query):
     """
 
 #    async with client_session.get(f'https://api.canister.me/v1/community/packages/search?query={urllib.parse.quote(query)}&searchFields=identifier,name&responseFields=identifier,header,tintColor,name,price,description,packageIcon,repository.uri,repository.name,author,maintainer,latestVersion,nativeDepiction,depiction') as resp:
-     async with client_session.get(f'https://api.canister.me/v2/jailbreak/package/search?q={urllib.parse.quote(query)}&limit=250'):
+    async with client_session.get(f'https://api.canister.me/v2/jailbreak/package/search?q={urllib.parse.quote(query)}&limit=1') as resp:
         if resp.status == 200:
             response = json.loads(await resp.text())
-            if response.get('status') == "Successful":
+            if response.get('message') == "200 Successful":
                 return response.get('data')
             else:
                 return None
