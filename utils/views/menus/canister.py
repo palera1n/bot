@@ -27,7 +27,6 @@ default_repos = [
 
 
 def tweak_embed_format(entry):
-    print(entry)
     titleKey = entry.get('name')
     description = discord.utils.escape_markdown(entry.get('description'))
 
@@ -52,6 +51,8 @@ def tweak_embed_format(entry):
         name="Repo", value=f"[{entry.get('repository').get('name')}]({entry.get('repository').get('uri')})" or "No Repo", inline=True)
     embed.add_field(name="Bundle ID", value=entry.get(
         "package") or "Not found", inline=True)
+    embed.add_field(name="Architecture", value=entry.get(
+        "architecture") or "Not found", inline=True)
 
     if entry.get('tintColor') is None and entry.get('icon') is not None and url_pattern.match(entry.get('icon')):
         embed.color = discord.Color.blue()

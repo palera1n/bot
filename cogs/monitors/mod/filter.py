@@ -65,8 +65,10 @@ class Filter(commands.Cog):
             return
         if message.guild.id != cfg.guild_id:
             return
-        if message.author.bot:
-            return
+        # palera1n minecraft bridge, we want this to be filtered
+        if not str(message.author.id) == "1061843562251169852":
+            if message.author.bot:
+                return
         if gatekeeper.has(message.guild, message.author, 7):
             return
         db_guild = guild_service.get_guild()
@@ -308,7 +310,7 @@ class Filter(commands.Cog):
 
         intent_news_triggered = any(intent in text for intent in intent_news)
         intent_cij_triggered = any(intent in text for intent in intent_cij)
-        
+
         if (intent_news_triggered or intent_cij_triggered) and subject_and_word_in_message and message.channel.id == guild_service.get_guild().channel_general:
             view = discord.ui.View()
             embed = discord.Embed(color=discord.Color.orange())
