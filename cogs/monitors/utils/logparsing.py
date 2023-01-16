@@ -35,8 +35,8 @@ class LogParsing(commands.Cog):
         json = await fetch_remote_json(att.url)
         if json is not None:
             if "panicString" in json:
-                if not "```" in text or "@everyone" in text or "@here" in text:
-                    string = json['panicString'].split("\n")[0]
+                string = json['panicString'].split("\n")[0]
+                if not "```" in string or "@everyone" in string or "@here" in string:
                     await msg.reply(f"Hey, it looks like this is a panic log!\n\nHere is the panic string:```{string}```")
 
     async def do_log_file(self, msg: discord.Message, att):
