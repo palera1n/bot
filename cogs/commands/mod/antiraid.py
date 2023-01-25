@@ -5,6 +5,9 @@ from discord import app_commands
 from data.services import guild_service, user_service
 from utils import cfg, GIRContext, transform_context
 from utils.framework import admin_and_up, mod_and_up
+from utils.framework.checks import always_whisper
+from utils.framework.transformers import ModsAndAboveMemberOrUser
+from utils.mod.modactions_helpers import add_ban_case, submit_public_log
 from utils.views import Confirm, GenericDescriptionModal
 
 
@@ -31,7 +34,8 @@ class AntiRaid(commands.Cog):
     @app_commands.command(description="Add a list of (newline-separated) phrases to the raid filter.")
     @transform_context
     async def batchraid(self, ctx: GIRContext) -> None:
-        modal = GenericDescriptionModal(ctx, author=ctx.author, title=f"New sub news post")
+        modal = GenericDescriptionModal(
+            ctx, author=ctx.author, title=f"New sub news post")
         await ctx.interaction.response.send_modal(modal)
         await modal.wait()
 
@@ -44,24 +48,30 @@ class AntiRaid(commands.Cog):
         phrases = [phrase.strip() for phrase in phrases if phrase.strip()]
 
         phrases_contenders = set(phrases)
-        phrases_already_in_db = set([phrase.word for phrase in guild_service.get_guild().raid_phrases])
+        phrases_already_in_db = set(
+            [phrase.word for phrase in guild_service.get_guild().raid_phrases])
 
-        duplicate_count = len(phrases_already_in_db & phrases_contenders) # count how many duplicates we have
+        # count how many duplicates we have
+        duplicate_count = len(phrases_already_in_db & phrases_contenders)
         new_phrases = list(phrases_contenders - phrases_already_in_db)
 
         if not new_phrases:
-            raise commands.BadArgument("All the phrases you supplied are already in the database.")
+            raise commands.BadArgument(
+                "All the phrases you supplied are already in the database.")
 
-        phrases_prompt_string = "\n".join([f"**{i+1}**. {phrase}" for i, phrase in enumerate(new_phrases)])
+        phrases_prompt_string = "\n".join(
+            [f"**{i+1}**. {phrase}" for i, phrase in enumerate(new_phrases)])
         if len(phrases_prompt_string) > 3900:
-            phrases_prompt_string = phrases_prompt_string[:3500] + "\n... (and some more)"
+            phrases_prompt_string = phrases_prompt_string[:3500] + \
+                "\n... (and some more)"
 
         embed = discord.Embed(title="Confirm raidphrase batch",
-                        color=discord.Color.dark_orange(),
-                        description=f"{phrases_prompt_string}\n\nShould we add these {len(new_phrases)} phrases?")
+                              color=discord.Color.dark_orange(),
+                              description=f"{phrases_prompt_string}\n\nShould we add these {len(new_phrases)} phrases?")
 
         if duplicate_count > 0:
-            embed.set_footer(text=f"Note: we found {duplicate_count} duplicates in your list.")
+            embed.set_footer(
+                text=f"Note: we found {duplicate_count} duplicates in your list.")
 
         view = Confirm(ctx)
         await ctx.respond_or_edit(embed=embed, view=view, ephemeral=True, followup=True)
@@ -131,11 +141,12 @@ class AntiRaid(commands.Cog):
         await ctx.interaction.response.defer()
         if channel is None:
             channel = ctx.channel
-            
+
         if await self.lock_unlock_channel(ctx, channel, True) is not None:
             await ctx.send_success(f"Locked {channel.mention}!")
         else:
-            raise commands.BadArgument(f"{channel.mention} already locked or my permissions are wrong.")
+            raise commands.BadArgument(
+                f"{channel.mention} already locked or my permissions are wrong.")
 
     @admin_and_up()
     @app_commands.guilds(cfg.guild_id)
@@ -145,11 +156,12 @@ class AntiRaid(commands.Cog):
     async def unlock(self,  ctx: GIRContext, channel: discord.TextChannel = None):
         if channel is None:
             channel = ctx.channel
-            
+
         if await self.lock_unlock_channel(ctx, channel) is not None:
             await ctx.send_success(f"Unlocked {channel.mention}!")
         else:
-            raise commands.BadArgument(f"{channel.mention} already unlocked or my permissions are wrong.")
+            raise commands.BadArgument(
+                f"{channel.mention} already unlocked or my permissions are wrong.")
 
     @admin_and_up()
     @app_commands.guilds(cfg.guild_id)
@@ -160,7 +172,7 @@ class AntiRaid(commands.Cog):
         channel = channel or ctx.channel
         if channel.id in guild_service.get_locked_channels():
             raise commands.BadArgument("That channel is already lockable.")
-        
+
         guild_service.add_locked_channels(channel.id)
         await ctx.send_success(f"Added {channel.mention} as lockable channel!")
 
@@ -173,10 +185,10 @@ class AntiRaid(commands.Cog):
         channel = channel or ctx.channel
         if channel.id not in guild_service.get_locked_channels():
             raise commands.BadArgument("That channel isn't already lockable.")
-        
+
         guild_service.remove_locked_channels(channel.id)
         await ctx.send_success(f"Removed {channel.mention} as lockable channel!")
-            
+
     @admin_and_up()
     @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Freeze all channels")
@@ -184,8 +196,9 @@ class AntiRaid(commands.Cog):
     async def freeze(self, ctx):
         channels = guild_service.get_locked_channels()
         if not channels:
-            raise commands.BadArgument("No freezeable channels! Set some using `/freezeable`.")
-        
+            raise commands.BadArgument(
+                "No freezeable channels! Set some using `/freezeable`.")
+
         locked = []
         await ctx.defer()
         for channel in channels:
@@ -193,13 +206,13 @@ class AntiRaid(commands.Cog):
             if channel is not None:
                 if await self.lock_unlock_channel(ctx, channel, lock=True):
                     locked.append(channel)
-        
-        if locked:              
+
+        if locked:
             await ctx.send_success(f"Locked {len(locked)} channels!")
         else:
-            raise commands.BadArgument("Server is already locked or my permissions are wrong.")
-        
-    
+            raise commands.BadArgument(
+                "Server is already locked or my permissions are wrong.")
+
     @admin_and_up()
     @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Unfreeze all channels")
@@ -207,8 +220,9 @@ class AntiRaid(commands.Cog):
     async def unfreeze(self, ctx):
         channels = guild_service.get_locked_channels()
         if not channels:
-            raise commands.BadArgument("No unfreezeable channels! Set some using `/freezeable`.")
-        
+            raise commands.BadArgument(
+                "No unfreezeable channels! Set some using `/freezeable`.")
+
         unlocked = []
         await ctx.defer()
         for channel in channels:
@@ -216,18 +230,19 @@ class AntiRaid(commands.Cog):
             if channel is not None:
                 if await self.lock_unlock_channel(ctx, channel, lock=None):
                     unlocked.append(channel)
-        
-        if unlocked:              
+
+        if unlocked:
             await ctx.send_success(f"Unlocked {len(unlocked)} channels!")
         else:
-            raise commands.BadArgument("Server is already unlocked or my permissions are wrong.")
+            raise commands.BadArgument(
+                "Server is already unlocked or my permissions are wrong.")
 
     async def lock_unlock_channel(self,  ctx: GIRContext, channel, lock=None):
         db_guild = guild_service.get_guild()
-        
+
         default_role = ctx.guild.default_role
-        member_plus = ctx.guild.get_role(db_guild.role_memberplus)   
-        
+        member_plus = ctx.guild.get_role(db_guild.role_memberplus)
+
         default_perms = channel.overwrites_for(default_role)
         memberplus_perms = channel.overwrites_for(member_plus)
 
@@ -239,13 +254,47 @@ class AntiRaid(commands.Cog):
             memberplus_perms.send_messages = None
         else:
             return
-        
+
         try:
             await channel.set_permissions(default_role, overwrite=default_perms, reason="Locked!" if lock else "Unlocked!")
             await channel.set_permissions(member_plus, overwrite=memberplus_perms, reason="Locked!" if lock else "Unlocked!")
             return True
         except Exception:
             return
+
+    @admin_and_up()
+    @app_commands.guilds(cfg.guild_id)
+    @app_commands.command(description="Ban all members with a certain name")
+    @app_commands.describe(member="Member to ban. The bot will find members with the same name and ban them all.")
+    @transform_context
+    @always_whisper
+    async def nameban(self, ctx, member: ModsAndAboveMemberOrUser):
+        all_members = [m for m in ctx.guild.members if m.name == member.name]
+
+        # send a prompt to the channel to confirm if invoker wants to ban
+        view = Confirm(ctx, true_response=f"Alright, banning {len(all_members)} members with name `{member.name}`! This will take a while.",
+                       false_response="Cancelled.")
+        await ctx.respond(f"Found {len(all_members)} members with the username `{member.name}`. Are you **absolutely sure** you want to ban them all?", view=view, ephemeral=True)
+        # Wait for the View to stop listening for input...
+        await view.wait()
+        do_ban = view.value
+
+        if not do_ban:
+            return
+
+        reason = f"Mass ban on {len(all_members)} users with name `{member.name}`"
+        db_guild = guild_service.get_guild()
+
+        # ban all members
+        for m in all_members:
+            self.bot.ban_cache.ban(m.id)
+            log = await add_ban_case(m, ctx.author, reason, db_guild)
+            await m.ban(reason=reason)
+
+            # send a message to the modlog channel
+            await submit_public_log(ctx, db_guild, member, log)
+
+        await ctx.send_success(f"Banned {len(all_members)} members with name `{member.name}`!", ephemeral=False)
 
 
 async def setup(bot):
