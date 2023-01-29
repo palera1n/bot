@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile.production
       # network: host # comment this out if you want to use dockerized mongo
-    restart: no
+    restart: "no"
     # network_mode: host # comment this out if you want to use dockerized mongo
     # also, if you want to use dockerized Mongo you need to change DB_HOST to "mongo" in .env
 
