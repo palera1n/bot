@@ -332,7 +332,7 @@ class Genius(commands.Cog):
         await ctx.send_success("This thread has been marked as solved. Archiving this channel!")
         await asyncio.sleep(5)
 
-        await ctx.channel.edit(archived=True)
+        await ctx.channel.edit(archived=True, locked=True)
 
     @commands.Cog.listener()
     async def on_thread_create(self, thread: discord.Thread):
