@@ -20,6 +20,13 @@ class Admin(commands.Cog):
     async def setpfp(self, ctx: GIRContext, image: ImageAttachment):
         await self.bot.user.edit(avatar=await image.read())
         await ctx.send_success("Done!", delete_after=5)
+        
+    @admin_and_up()
+    @app_commands.guilds(cfg.guild_id)
+    @app_commands.command(description="Raises a KeyboardInterrupt")
+    @transform_context
+    async def exit(self, ctx: GIRContext):
+        raise KeyboardInterrupt()
 
     @commands.command()
     @commands.is_owner()
