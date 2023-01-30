@@ -235,9 +235,10 @@ class ModUtils(commands.Cog):
     @transform_context
     async def command_ban(self, ctx: GIRContext, member: ModsAndAboveMember, command_name: str):
         final_command = ""
-        command: typing.Union[app_commands.Command, app_commands.Group] = self.bot.tree.get_command(command_name.split()[0].lower(), guild=ctx.guild)
+        command: typing.Union[app_commands.Command, app_commands.Group] = self.bot.tree.get_command(
+            command_name.split()[0].lower(), guild=ctx.guild)
         if not command_name:
-                raise commands.BadArgument("That command doesn't exist.")
+            raise commands.BadArgument("That command doesn't exist.")
 
         final_command += command.name
 
@@ -274,9 +275,9 @@ class ModUtils(commands.Cog):
             if image.size > 8_000_000:
                 raise commands.BadArgument("Image is too big!")
 
-            await channel.send(message, file=await image.to_file())
+            await channel.send(message, file=await image.to_file(), allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=False))
         else:
-            await channel.send(message)
+            await channel.send(message, allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=False))
         await ctx.send_success("Done!")
 
         logging_channel = ctx.guild.get_channel(
@@ -343,14 +344,16 @@ class ModUtils(commands.Cog):
     @app_commands.command(description="List all timed out users")
     @transform_context
     async def viewmuted(self, ctx: GIRContext):
-        muted_members = [user for user in ctx.guild.members if user.is_timed_out()]
+        muted_members = [
+            user for user in ctx.guild.members if user.is_timed_out()]
 
         if not muted_members:
             await ctx.send_warning("No one is muted.", delete_after=5)
             return
 
         new_line = "\n"
-        muted_list = new_line.join([f"{user.mention} {user} — Unmuted {format_dt(user.timed_out_until, style='R')}" for user in sorted(muted_members[:8], key=lambda member: member.timed_out_until)])
+        muted_list = new_line.join([f"{user.mention} {user} — Unmuted {format_dt(user.timed_out_until, style='R')}" for user in sorted(
+            muted_members[:8], key=lambda member: member.timed_out_until)])
         embed = discord.Embed(color=discord.Color.red(),
                               description=muted_list)
         embed.set_footer(text=f"{len(muted_members)} users muted")

@@ -100,7 +100,9 @@ class MyTree(app_commands.CommandTree):
         return True
 
 
-bot = Bot(command_prefix='!', intents=intents, allowed_mentions=mentions, tree_cls=MyTree)
+bot = Bot(command_prefix='!', intents=intents,
+          allowed_mentions=mentions, tree_cls=MyTree)
+
 
 @bot.tree.error
 async def app_command_error(interaction: discord.Interaction, error: AppCommandError):
