@@ -9,7 +9,7 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 # system dependencies
 ENV NODE_VERSION=16.8.0
 RUN apt update
-RUN apt install -y curl git gcc python3-dev
+RUN apt install -y curl git gcc python3-dev ffmpeg libsm6 libxext6 tesseract-ocr
 
 # python dependencies
 COPY ./requirements.txt .

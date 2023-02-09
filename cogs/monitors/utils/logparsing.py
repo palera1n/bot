@@ -36,22 +36,25 @@ class LogParsing(commands.Cog):
         if json is not None:
             if "panicString" in json:
                 string = json['panicString'].split("\n")[0]
-                
+
             if "build" in json:
                 build = json['build'].split("\n")[0]
-                
+
             if "product" in json:
                 product = json['product'].split("\n")[0]
-            
+
+            if string == "" or build == "" or product == "":
+                return
+
             if (not "```" in string or "@everyone" in string or "@here" in string) and (not "`" in build or "@everyone" in build or "@here" in build) and (not "`" in product or "@everyone" in product or "@here" in product):
-                    await msg.reply(f"Hey, it looks like this is a panic log for build: `{build}` on a `{product}`!\n\nHere is the panic string:```{string}```")
+                await msg.reply(f"Hey, it looks like this is a panic log for build: `{discord.utils.escape_markdown(build)}` on a `{discord.utils.escape_markdown(product)}`!\n\nHere is the panic string:```{discord.utils.escape_markdown(string)}```")
 
     async def do_log_file(self, msg: discord.Message, att):
         text = await fetch_remote_file(att.url)
         if text is not None:
             if not "```" in text or "@everyone" in text or "@here" in text:
                 string = '\n'.join(text.splitlines()[-10:])
-                await msg.reply(f"Hey, it looks like this is a palera1n failure log!\n\nHere is the last 10 lines to help debuggers:```{string}```")
+                await msg.reply(f"Hey, it looks like this is a palera1n failure log!\n\nHere is the last 10 lines to help debuggers:```{discord.utils.escape_markdown(string)}```")
 
 
 async def setup(bot):

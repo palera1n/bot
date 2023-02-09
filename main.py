@@ -143,17 +143,7 @@ async def app_command_error(interaction: discord.Interaction, error: AppCommandE
 
 @bot.event
 async def on_ready():
-    print("""
-                      88             
-                      ""             
-                                     
-           ,adPPYb,d8 88 8b,dPPYba,  
-          a8"    `Y88 88 88P'   "Y8  
-          8b       88 88 88          
-          "8a,   ,d88 88 88          
-           `"YbbdP"Y8 88 88          
-           aa,    ,88                
-            "Y8bbdP"              \n""")
+    logger.info("palera1n bot")
     logger.info(
         f'Logged in as: {bot.user.name} - {bot.user.id} ({discord.__version__})')
     logger.info(f'Successfully logged in and booted...!')
