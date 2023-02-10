@@ -1,6 +1,7 @@
 import asyncio
 from typing import Union
 
+import io
 import discord
 import pytimeparse
 from data.services import user_service
@@ -14,7 +15,7 @@ from utils.views.modals.prompt import GenericDescriptionModal
 from .report_action import ModAction, ReportActionReason
 
 
-async def report(bot: discord.Client, message: discord.Message, word: str, invite=None):
+async def report(bot: discord.Client, message: discord.Message, word: str, invite=None, image=None):
     """Deals with a report
 
     Parameters
@@ -38,6 +39,9 @@ async def report(bot: discord.Client, message: discord.Message, word: str, invit
     if invite:
         embed = prepare_embed(message, word, title="Invite filter")
         await channel.send(f"{ping_string}\nMessage contained invite: {invite}", embed=embed, view=view, allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=True))
+    elif image is not None:
+        embed = prepare_embed(message, word, title="Image filter")
+        await channel.send(f"{ping_string}\nMessage contained image with filtered text", embed=embed, view=view, file=discord.File(io.BytesIO(image), filename="filtered_image.png"), allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=True))
     else:
         embed = prepare_embed(message, word)
         await channel.send(ping_string, embed=embed, view=view, allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=True))
