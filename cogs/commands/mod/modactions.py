@@ -49,7 +49,8 @@ class ModActions(commands.Cog):
 
         db_guild = guild_service.get_guild()
 
-        log = add_kick_case(target_member=member, mod=ctx.author, reason=reason, db_guild=db_guild)
+        log = add_kick_case(target_member=member,
+                            mod=ctx.author, reason=reason, db_guild=db_guild)
         await notify_user(member, f"You were kicked from {ctx.guild.name}", log)
 
         await ctx.defer(ephemeral=False)
@@ -60,19 +61,70 @@ class ModActions(commands.Cog):
 
     @mod_and_up()
     @app_commands.guilds(cfg.guild_id)
-    @app_commands.command(description="Kick a user")
-    @app_commands.describe(member="User to kick")
+    @app_commands.command(description="Ban Ariez")
+    @app_commands.describe(member="Ariez")
     @transform_context
-    async def roblox(self, ctx: GIRContext, member: ModsAndAboveMember) -> None:
-        reason = "This Discord server is for iOS jailbreaking, not Roblox. Please join https://discord.gg/jailbreak instead, thank you!"
+    async def ariez(self, ctx: GIRContext, member: ModsAndAboveMember) -> None:
+        reason = "ariez (rent free)"
 
         db_guild = guild_service.get_guild()
 
-        log = add_kick_case(target_member=member, mod=ctx.author, reason=reason, db_guild=db_guild)
-        await notify_user(member, f"You were kicked from {ctx.guild.name}", log)
+        member_is_external = isinstance(member, discord.User)
+
+        # if the ID given is of a user who isn't in the guild, try to fetch the profile
+        if member_is_external:
+            if self.bot.ban_cache.is_banned(member.id):
+                raise commands.BadArgument("That user is already banned!")
 
         await ctx.defer(ephemeral=False)
-        await member.kick(reason=reason)
+        self.bot.ban_cache.ban(member.id)
+        log = await add_ban_case(member, ctx.author, reason, db_guild)
+
+        if not member_is_external:
+            if cfg.ban_appeal_url is None:
+                await notify_user(member, f"You have been banned from {ctx.guild.name}", log)
+            else:
+                await notify_user(member, f"You have been banned from {ctx.guild.name}\n\nIf you would like to appeal your ban, please fill out this form: <{cfg.ban_appeal_url}>", log)
+
+            await member.ban(reason=reason)
+        else:
+            # hackban for user not currently in guild
+            await ctx.guild.ban(discord.Object(id=member.id))
+
+        await ctx.respond_or_edit(embed=log, delete_after=10)
+        await submit_public_log(ctx, db_guild, member, log)
+
+    @mod_and_up()
+    @app_commands.guilds(cfg.guild_id)
+    @app_commands.command(description="Ban SuperTom")
+    @app_commands.describe(member="SuperTom")
+    @transform_context
+    async def supertom(self, ctx: GIRContext, member: ModsAndAboveMember) -> None:
+        reason = "super thomas"
+
+        db_guild = guild_service.get_guild()
+
+        member_is_external = isinstance(member, discord.User)
+
+        # if the ID given is of a user who isn't in the guild, try to fetch the profile
+        if member_is_external:
+            if self.bot.ban_cache.is_banned(member.id):
+                raise commands.BadArgument("That user is already banned!")
+
+        await ctx.defer(ephemeral=False)
+        self.bot.ban_cache.ban(member.id)
+        log = await add_ban_case(member, ctx.author, reason, db_guild)
+
+        if not member_is_external:
+            if cfg.ban_appeal_url is None:
+                await notify_user(member, f"You have been banned from {ctx.guild.name}", log)
+            else:
+                await notify_user(member, f"You have been banned from {ctx.guild.name}\n\nIf you would like to appeal your ban, please fill out this form: <{cfg.ban_appeal_url}>", log)
+
+            await member.ban(reason=reason)
+        else:
+            # hackban for user not currently in guild
+            await ctx.guild.ban(discord.Object(id=member.id))
 
         await ctx.respond_or_edit(embed=log, delete_after=10)
         await submit_public_log(ctx, db_guild, member, log)
@@ -226,7 +278,8 @@ class ModActions(commands.Cog):
             if self.bot.ban_cache.is_banned(user.id):
                 raise commands.BadArgument("That user is already banned!")
 
-        confirm_embed = discord.Embed(description=f"{ctx.author.mention} wants to staff ban {user.mention} with reason `{reason}`. Another Moderator needs to click Yes to submit this ban.\n\nClicking Yes means this was discussed amongst the staff team and will hide the banning Moderator. This should not be used often.", color=discord.Color.blurple())
+        confirm_embed = discord.Embed(
+            description=f"{ctx.author.mention} wants to staff ban {user.mention} with reason `{reason}`. Another Moderator needs to click Yes to submit this ban.\n\nClicking Yes means this was discussed amongst the staff team and will hide the banning Moderator. This should not be used often.", color=discord.Color.blurple())
         view = SecondStaffConfirm(ctx, ctx.author)
         await ctx.respond_or_edit(view=view, embed=confirm_embed)
         await view.wait()

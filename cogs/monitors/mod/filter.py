@@ -85,7 +85,8 @@ class Filter(commands.Cog):
             return
 
         if message.attachments and await self.bad_word_filter(message, db_guild):
-            return
+            if not message.channel.id == db_guild.channel_genius_bar:
+                return
 
         if gatekeeper.has(message.guild, message.author, 6):
             return
@@ -169,6 +170,7 @@ class Filter(commands.Cog):
                     return
 
                 triggered = True
+                break
         else:
             if image_triggered_words != []:
                 for word in image_triggered_words:
@@ -187,6 +189,7 @@ class Filter(commands.Cog):
                         return
 
                     triggered = True
+                    break
 
         if triggered:
             await self.delete(message)
