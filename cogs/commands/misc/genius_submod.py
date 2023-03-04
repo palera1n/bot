@@ -202,6 +202,7 @@ class Genius(commands.Cog):
                 page += 1
                 toc_embed.description = ""
                 toc_embed.title = ""
+                toc_embed.description += this_line
                 toc_embed.set_footer(text=f"Table of Contents • Page {page}")
 
         self.bot.issue_cache.cache = contents
