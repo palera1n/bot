@@ -96,6 +96,41 @@ class ModActions(commands.Cog):
 
     @mod_and_up()
     @app_commands.guilds(cfg.guild_id)
+    @app_commands.command(description="Ban Beast")
+    @app_commands.describe(member="Beast")
+    @transform_context
+    async def beast(self, ctx: GIRContext, member: ModsAndAboveMember) -> None:
+        reason = "beast (rent free)"
+
+        db_guild = guild_service.get_guild()
+
+        member_is_external = isinstance(member, discord.User)
+
+        # if the ID given is of a user who isn't in the guild, try to fetch the profile
+        if member_is_external:
+            if self.bot.ban_cache.is_banned(member.id):
+                raise commands.BadArgument("That user is already banned!")
+
+        await ctx.defer(ephemeral=False)
+        self.bot.ban_cache.ban(member.id)
+        log = await add_ban_case(member, ctx.author, reason, db_guild)
+
+        if not member_is_external:
+            if cfg.ban_appeal_url is None:
+                await notify_user(member, f"You have been banned from {ctx.guild.name}\n\nhttps://tenor.com/view/mrbeast-ytpmv-rap-battle-squid-game-squid-game-vs-mrbeast-gif-25491394", log)
+            else:
+                await notify_user(member, f"You have been banned from {ctx.guild.name}\n\nhttps://tenor.com/view/mrbeast-ytpmv-rap-battle-squid-game-squid-game-vs-mrbeast-gif-25491394\n\nIf you would like to appeal your ban, please fill out this form: <{cfg.ban_appeal_url}>", log)
+
+            await member.ban(reason=reason)
+        else:
+            # hackban for user not currently in guild
+            await ctx.guild.ban(discord.Object(id=member.id))
+
+        await ctx.respond_or_edit(embed=log, delete_after=10)
+        await submit_public_log(ctx, db_guild, member, log)
+
+    @mod_and_up()
+    @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Ban SuperTom")
     @app_commands.describe(member="SuperTom")
     @transform_context
