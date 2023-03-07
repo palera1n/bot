@@ -1,5 +1,9 @@
 import json
 import re
+import pytesseract
+import cv2
+import aiohttp
+import numpy as np
 from datetime import datetime, timezone
 
 import aiohttp
@@ -80,6 +84,10 @@ class Filter(commands.Cog):
         if message.content and await self.bad_word_filter(message, db_guild):
             return
 
+        if message.attachments and await self.bad_word_filter(message, db_guild):
+            if not message.channel.id == db_guild.channel_genius_bar:
+                return
+
         if gatekeeper.has(message.guild, message.author, 6):
             return
 
@@ -112,29 +120,76 @@ class Filter(commands.Cog):
         except Exception:
             pass
 
+    async def url_to_image(self, url):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers={'User-Agent': 'Mozilla/5.0'}) as res:
+                image = np.asarray(bytearray(await res.read()), dtype="uint8")
+                image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+
+                return image
+
     async def bad_word_filter(self, message, db_guild) -> bool:
         triggered_words = find_triggered_filters(
             message.content, message.author)
         if not triggered_words:
-            return
+            if not message.attachments:
+                return
+
+            try:
+                att = message.attachments[0]
+                if att.filename.lower().endswith(".png") or att.filename.lower().endswith(".jpg"):
+                    image = await self.url_to_image(att.url)
+
+                    grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                    thresh = cv2.threshold(
+                        grey, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+                    text = pytesseract.image_to_string(thresh)
+
+                    image_triggered_words = find_triggered_filters(
+                        text, message.author)
+                    if not image_triggered_words:
+                        return
+            except:
+                return
 
         dev_role = message.guild.get_role(db_guild.role_dev)
 
         triggered = False
-        for word in triggered_words:
-            if word.piracy:
-                # ignore if it's a dev saying piracy in #development
-                if message.channel.id == db_guild.channel_development and dev_role in message.author.roles:
-                    continue
+        if triggered_words != []:
+            for word in triggered_words:
+                if word.piracy:
+                    # ignore if it's a dev saying piracy in #development
+                    if message.channel.id == db_guild.channel_development and dev_role in message.author.roles:
+                        continue
 
-            if word.notify:
-                await self.delete(message)
-                await self.ratelimit(message)
-                await self.do_filter_notify(message, word.word)
-                await report(self.bot, message, word.word)
-                return
+                if word.notify:
+                    await self.delete(message)
+                    await self.ratelimit(message)
+                    await self.do_filter_notify(message, word.word)
+                    await report(self.bot, message, word.word)
+                    return
 
-            triggered = True
+                triggered = True
+                break
+        else:
+            if image_triggered_words != []:
+                for word in image_triggered_words:
+                    if word.piracy:
+                        # ignore if it's a dev saying piracy in #development
+                        if message.channel.id == db_guild.channel_development and dev_role in message.author.roles:
+                            continue
+
+                    if word.notify:
+                        await self.delete(message)
+                        await self.ratelimit(message)
+                        await self.do_filter_notify(message, word.word)
+                        encode_success, encode_buf_arr = cv2.imencode(
+                            ".png", image)
+                        await report(self.bot, message, word.word, image=encode_buf_arr.tobytes())
+                        return
+
+                    triggered = True
+                    break
 
         if triggered:
             await self.delete(message)

@@ -1,8 +1,8 @@
 version: '3.4'
 
 services:
-  gir:
-    container_name: gir
+  palera1n-bot:
+    container_name: palera1n-bot
     build:
       context: .
       dockerfile: Dockerfile.production
@@ -20,7 +20,7 @@ services:
     image: mongo
     restart: always
     ports:
-      - 127.0.0.1:27018:27017
+      - 127.0.0.1:27017:27017
     environment:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null

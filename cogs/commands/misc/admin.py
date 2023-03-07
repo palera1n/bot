@@ -4,7 +4,7 @@ from discord import app_commands
 from discord.ext import commands
 from data.services import guild_service
 from utils import GIRContext, cfg, transform_context, logger
-from utils.framework import admin_and_up, guild_owner_and_up
+from utils.framework import admin_and_up, guild_owner_and_up, bot_owner_and_up
 from utils.framework.transformers import ImageAttachment
 
 
@@ -12,7 +12,7 @@ class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @admin_and_up()
+    @bot_owner_and_up()
     @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Change the bot's profile picture")
     @app_commands.describe(image="Image to use as profile picture")

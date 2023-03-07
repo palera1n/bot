@@ -359,7 +359,7 @@ class AntiRaidMonitor(commands.Cog):
 
             if dm_user:
                 try:
-                    await user.send(f"You were banned from {user.guild.name}.\n\nThis action was performed automatically. If you think this was a mistake, please send a message here: https://www.reddit.com/message/compose?to=%2Fr%2FJailbreak", embed=log)
+                    await user.send(f"You were banned from {user.guild.name}.\n\nThis action was performed automatically. If you think this was a mistake, please send a message here: https://www.reddit.com/message/compose?to=%2Fr%2Fpalera1n", embed=log)
                 except Exception:
                     pass
 

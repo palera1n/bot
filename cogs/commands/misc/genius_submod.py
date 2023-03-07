@@ -202,7 +202,7 @@ class Genius(commands.Cog):
                 page += 1
                 toc_embed.description = ""
                 toc_embed.title = ""
-                toc_embed.set_footer(text=f"Table of Contents • Page {page}")
+                toc_embed.description += this_line
 
         self.bot.issue_cache.cache = contents
         await channel.send(embed=toc_embed)
@@ -332,7 +332,7 @@ class Genius(commands.Cog):
         await ctx.send_success("This thread has been marked as solved. Archiving this channel!")
         await asyncio.sleep(5)
 
-        await ctx.channel.edit(archived=True)
+        await ctx.channel.edit(archived=True, locked=True)
 
     @commands.Cog.listener()
     async def on_thread_create(self, thread: discord.Thread):

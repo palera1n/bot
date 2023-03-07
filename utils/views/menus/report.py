@@ -1,6 +1,7 @@
 import asyncio
 from typing import Union
 
+import io
 import discord
 import pytimeparse
 from data.services import user_service
@@ -14,7 +15,7 @@ from utils.views.modals.prompt import GenericDescriptionModal
 from .report_action import ModAction, ReportActionReason
 
 
-async def report(bot: discord.Client, message: discord.Message, word: str, invite=None):
+async def report(bot: discord.Client, message: discord.Message, word: str, invite=None, image=None):
     """Deals with a report
 
     Parameters
@@ -37,10 +38,13 @@ async def report(bot: discord.Client, message: discord.Message, word: str, invit
 
     if invite:
         embed = prepare_embed(message, word, title="Invite filter")
-        await channel.send(f"{ping_string}\nMessage contained invite: {invite}", embed=embed, view=view)
+        await channel.send(f"{ping_string}\nMessage contained invite: {invite}", embed=embed, view=view, allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=True))
+    elif image is not None:
+        embed = prepare_embed(message, word, title="Image filter")
+        await channel.send(f"{ping_string}\nMessage contained image with filtered text", embed=embed, view=view, file=discord.File(io.BytesIO(image), filename="filtered_image.png"), allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=True))
     else:
         embed = prepare_embed(message, word)
-        await channel.send(ping_string, embed=embed, view=view)
+        await channel.send(ping_string, embed=embed, view=view, allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=True))
 
 
 async def manual_report(mod: discord.Member, target: Union[discord.Message, discord.Member] = None):
@@ -66,7 +70,7 @@ async def manual_report(mod: discord.Member, target: Union[discord.Message, disc
         view = ReportActions(target)
 
     embed = prepare_embed(target, title="A moderator reported a member")
-    await channel.send(ping_string, embed=embed, view=view)
+    await channel.send(ping_string, embed=embed, view=view, allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=True))
 
 
 async def report_raid_phrase(bot: discord.Client, message: discord.Message, domain: str):
@@ -92,7 +96,7 @@ async def report_raid_phrase(bot: discord.Client, message: discord.Message, doma
 
     embed = prepare_embed(
         message, domain, title=f"Possible new raid phrase detected\n{domain}")
-    await channel.send(ping_string, embed=embed, view=view)
+    await channel.send(ping_string, embed=embed, view=view, allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=True))
 
 
 async def report_spam(bot, msg, user, title):
@@ -103,7 +107,7 @@ async def report_spam(bot, msg, user, title):
     view = SpamReportActions(user)
     embed = prepare_embed(msg, title=title)
 
-    await channel.send(ping_string, embed=embed, view=view)
+    await channel.send(ping_string, embed=embed, view=view, allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=True))
 
 
 async def report_raid(user, msg=None):
@@ -132,7 +136,7 @@ def prepare_ping_string(db_guild, message):
         "Message object"
 
     """
-    ping_string = ""
+    """ping_string = ""
     if cfg.dev:
         return ping_string
 
@@ -142,7 +146,8 @@ def prepare_ping_string(db_guild, message):
         if member.status == discord.Status.online or offline_ping:
             ping_string += f"{member.mention} "
 
-    return ping_string
+    return ping_string"""
+    return "<@&1068359860728643704> "
 
 
 def prepare_embed(target: Union[discord.Message, discord.Member], word: str = None, title="Word filter"):
@@ -293,7 +298,7 @@ class RaidPhraseReportActions(ui.View):
         super().__init__(timeout=None)
         self.target_member = author
         self.domain = domain
-        
+
     async def interaction_check(self, interaction: discord.Interaction):
         if not gatekeeper.has(self.target_member.guild, interaction.user, 5):
             return False
@@ -309,7 +314,7 @@ class RaidPhraseReportActions(ui.View):
         finally:
             await interaction.message.delete()
             self.stop()
-        
+
     @ui.button(emoji="💀", label="Ban and add raidphrase", style=discord.ButtonStyle.primary)
     async def ban(self, interaction: discord.Interaction, button: ui.Button):
         ctx = GIRContext(interaction)
@@ -349,7 +354,7 @@ class SpamReportActions(ui.View):
         finally:
             await interaction.message.delete()
             self.stop()
-        
+
     @ui.button(emoji="💀", label="Ban", style=discord.ButtonStyle.primary)
     async def ban(self, interaction: discord.Interaction, _: ui.Button):
         try:
@@ -360,11 +365,12 @@ class SpamReportActions(ui.View):
         finally:
             await interaction.message.delete()
             self.stop()
-        
+
     @ui.button(emoji="⚠️", label="Temporary mute", style=discord.ButtonStyle.primary)
     async def mute(self, interaction: discord.Interaction, button: ui.Button):
         ctx = GIRContext(interaction)
-        view = GenericDescriptionModal(ctx, interaction.user, title=f"Mute duration for {self.target_member}", label="How long should they be muted for?", placeholder="i.e 1h, 1d, ...")
+        view = GenericDescriptionModal(
+            ctx, interaction.user, title=f"Mute duration for {self.target_member}", label="How long should they be muted for?", placeholder="i.e 1h, 1d, ...")
         await interaction.response.send_modal(view)
         await view.wait()
         if view.value is not None:

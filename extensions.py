@@ -29,5 +29,6 @@ initial_extensions = [
     "cogs.monitors.utils.birthday",
     "cogs.monitors.utils.jailbreak_monitors",
     "cogs.monitors.utils.logparsing",
+    "cogs.monitors.utils.ocr",
     "cogs.monitors.utils.xp",
 ]

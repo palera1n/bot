@@ -10,7 +10,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 # system dependencies
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt install -y git gcc python3-dev
+RUN apt install -y git gcc python3-dev ffmpeg libsm6 libxext6 tesseract-ocr
 
 # python dependencies
 COPY ./requirements.txt .
