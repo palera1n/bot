@@ -41,6 +41,9 @@ async def setup():
 
     # put in the channel IDs for your server here
     guild.channel_reports = 1028693758910414998
+    # channel where geniuses can report to
+    # put in the channel IDs for your server here
+    guild.channel_mempro_reports = 123
     # channel where reactions will be logged
     # put in the channel IDs for your server here
     guild.channel_emoji_log = 1028693728589787156

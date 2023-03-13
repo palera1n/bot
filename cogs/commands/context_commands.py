@@ -11,10 +11,10 @@ from discord.ext import commands
 from discord.ext.commands.cooldowns import CooldownMapping
 from utils import GIRContext, cfg
 from utils.framework import MessageTextBucket, gatekeeper
-from utils.framework.checks import mod_and_up
+from utils.framework.checks import mod_and_up, mempro_and_up
 from utils.framework.transformers import ModsAndAboveMember
 from utils.views import PFPButton, PFPView
-from utils.views.menus.report import manual_report
+from utils.views.menus.report import manual_report, mempro_report
 from utils.views.menus.report_action import WarnView
 
 support_tags = [tag.name for tag in guild_service.get_guild(
@@ -139,6 +139,24 @@ def setup_context_commands(bot: commands.Bot):
         ctx.whisper = True
         member = await ModsAndAboveMember.transform(interaction, message.author)
         await manual_report(ctx.author, message)
+        await ctx.send_success("Generated report!")
+
+    @mempro_and_up()
+    @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Generate report (More-Accessable)")
+    async def generate_public_report_rc(interaction: discord.Interaction, member: discord.Member) -> None:
+        ctx = GIRContext(interaction)
+        ctx.whisper = True
+        member = await ModsAndAboveMember.transform(interaction, member)
+        await mempro_report(ctx.author, member)
+        await ctx.send_success("Generated report!")
+
+    @mempro_and_up()
+    @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Generate report (More-Accessable)")
+    async def generate_public_report_msg(interaction: discord.Interaction, message: discord.Message) -> None:
+        ctx = GIRContext(interaction)
+        ctx.whisper = True
+        member = await ModsAndAboveMember.transform(interaction, message.author)
+        await mempro_report(ctx.author, message)
         await ctx.send_success("Generated report!")
 
     @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Userinfo")
