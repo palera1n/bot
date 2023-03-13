@@ -11,6 +11,7 @@ from utils import GIRContext, cfg
 from utils.framework import gatekeeper
 from utils.mod import ban, mute, unmute, warn
 from utils.views.modals.prompt import GenericDescriptionModal
+from utils.framework.checks import PermissionsFailure
 
 from .report_action import ModAction, ReportActionReason
 
@@ -260,11 +261,18 @@ class ReportActions(ui.View):
 
     @ui.button(emoji="✅", label="Dismiss", style=discord.ButtonStyle.primary)
     async def dismiss(self, interaction: discord.Interaction, _: ui.Button):
+        if not gatekeeper.has(interaction.guild, interaction.user, 5):
+            raise PermissionsFailure(
+                "You do not have permission to use this command.")
         await interaction.message.delete()
         self.stop()
 
     @ui.button(emoji="⚠️", label="Warn", style=discord.ButtonStyle.primary)
     async def warn(self, interaction: discord.Interaction, _: ui.Button):
+        if not gatekeeper.has(interaction.guild, interaction.user, 5):
+            raise PermissionsFailure(
+                "You do not have permission to use this command.")
+
         view = ReportActionReason(
             target_member=self.target_member, mod=interaction.user, mod_action=ModAction.WARN)
         await interaction.response.send_message(embed=discord.Embed(description=f"{interaction.user.mention}, choose a warn reason for {self.target_member.mention}.", color=discord.Color.blurple()), view=view)
@@ -277,6 +285,10 @@ class ReportActions(ui.View):
 
     @ui.button(emoji="❌", label="Ban", style=discord.ButtonStyle.primary)
     async def ban(self, interaction: discord.Interaction, _: ui.Button):
+        if not gatekeeper.has(interaction.guild, interaction.user, 5):
+            raise PermissionsFailure(
+                "You do not have permission to use this command.")
+
         view = ReportActionReason(
             target_member=self.target_member, mod=interaction.user, mod_action=ModAction.BAN)
         await interaction.response.send_message(embed=discord.Embed(description=f"{interaction.user.mention}, choose a ban reason for {self.target_member.mention}.", color=discord.Color.blurple()), view=view)
@@ -289,17 +301,29 @@ class ReportActions(ui.View):
 
     @ui.button(emoji="🆔", label="Post ID", style=discord.ButtonStyle.primary)
     async def id(self, interaction: discord.Interaction, _: ui.Button):
+        if not gatekeeper.has(interaction.guild, interaction.user, 5):
+            raise PermissionsFailure(
+                "You do not have permission to use this command.")
+
         await interaction.response.send_message(self.target_member.id)
         await asyncio.sleep(10)
         await interaction.delete_original_message()
 
     @ui.button(emoji="🧹", label="Clean up", style=discord.ButtonStyle.primary)
     async def purge(self, interaction: discord.Interaction, button: ui.Button):
+        if not gatekeeper.has(interaction.guild, interaction.user, 5):
+            raise PermissionsFailure(
+                "You do not have permission to use this command.")
+
         await interaction.channel.purge(limit=100)
         self.stop()
 
     @ui.button(emoji="🔎", label="Claim report", style=discord.ButtonStyle.primary)
     async def claim(self, interaction: discord.Interaction, button: ui.Button):
+        if not gatekeeper.has(interaction.guild, interaction.user, 5):
+            raise PermissionsFailure(
+                "You do not have permission to use this command.")
+
         report_embed = interaction.message.embeds[0]
         if "(claimed)" in report_embed.title:
             ctx = GIRContext(interaction)
