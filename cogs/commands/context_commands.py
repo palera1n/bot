@@ -11,10 +11,10 @@ from discord.ext import commands
 from discord.ext.commands.cooldowns import CooldownMapping
 from utils import GIRContext, cfg
 from utils.framework import MessageTextBucket, gatekeeper
-from utils.framework.checks import mod_and_up
+from utils.framework.checks import mod_and_up, mempro_and_up
 from utils.framework.transformers import ModsAndAboveMember
 from utils.views import PFPButton, PFPView
-from utils.views.menus.report import manual_report
+from utils.views.menus.report import manual_report, mempro_report
 from utils.views.menus.report_action import WarnView
 
 support_tags = [tag.name for tag in guild_service.get_guild(
@@ -123,23 +123,47 @@ def setup_context_commands(bot: commands.Bot):
         view = WarnView(ctx, message.author)
         await ctx.respond(embed=discord.Embed(description=f"Choose a warn reason for {message.author.mention}.", color=discord.Color.blurple()), view=view, ephemeral=True)
 
-    @mod_and_up()
+    @mempro_and_up()
     @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Generate report")
     async def generate_report_rc(interaction: discord.Interaction, member: discord.Member) -> None:
         ctx = GIRContext(interaction)
         ctx.whisper = True
         member = await ModsAndAboveMember.transform(interaction, member)
-        await manual_report(ctx.author, member)
+        if gatekeeper.has(interaction.guild, interaction.user, 5):
+            await manual_report(ctx.author, member)
+        else:
+            await mempro_report(ctx.author, member)
         await ctx.send_success("Generated report!")
 
-    @mod_and_up()
+    @mempro_and_up()
     @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Generate report")
     async def generate_report_msg(interaction: discord.Interaction, message: discord.Message) -> None:
         ctx = GIRContext(interaction)
         ctx.whisper = True
         member = await ModsAndAboveMember.transform(interaction, message.author)
-        await manual_report(ctx.author, message)
+        if gatekeeper.has(interaction.guild, interaction.user, 5):
+            await manual_report(ctx.author, message)
+        else:
+            await mempro_report(ctx.author, message)
         await ctx.send_success("Generated report!")
+
+#    @mempro_and_up()
+#    @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Generate report (Public)")
+#    async def generate_public_report_rc(interaction: discord.Interaction, member: discord.Member) -> None:
+#        ctx = GIRContext(interaction)
+#        ctx.whisper = True
+#        member = await ModsAndAboveMember.transform(interaction, member)
+#        await mempro_report(ctx.author, member)
+#        await ctx.send_success("Generated report!")
+
+#    @mempro_and_up()
+#    @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Generate report (Public)")
+#    async def generate_public_report_msg(interaction: discord.Interaction, message: discord.Message) -> None:
+#        ctx = GIRContext(interaction)
+#        ctx.whisper = True
+#        member = await ModsAndAboveMember.transform(interaction, message.author)
+#        await mempro_report(ctx.author, message)
+#        await ctx.send_success("Generated report!")
 
     @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Userinfo")
     async def userinfo_rc(interaction: discord.Interaction, user: discord.Member) -> None:
