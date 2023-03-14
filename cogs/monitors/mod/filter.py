@@ -21,7 +21,6 @@ class Filter(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.invite_filter = r'(?:https?://)?discord(?:(?:app)?\.com/invite|\.gg)\/{1,}[a-zA-Z0-9]+/?'
-        self.spoiler_filter = r'\|\|(.*?)\|\|'
         self.spam_cooldown = commands.CooldownMapping.from_cooldown(
             2, 10.0, commands.BucketType.member)
 
@@ -99,7 +98,7 @@ class Filter(commands.Cog):
 
         if message.content and await self.do_invite_filter(message, db_guild):
             return
-        if await self.do_spoiler_newline_filter(message, db_guild):
+        if await self.do_newline_filter(message, db_guild):
             return
 
         await self.detect_cij_or_eta(message, db_guild)
@@ -231,24 +230,7 @@ class Filter(commands.Cog):
 
         return False
 
-    async def do_spoiler_newline_filter(self, message: discord.Message, db_guild):
-        """
-        SPOILER FILTER
-        """
-        if re.search(self.spoiler_filter, message.content, flags=re.S):
-            # ignore if dev in dev channel
-            dev_role = message.guild.get_role(db_guild.role_dev)
-            if message.channel.id == db_guild.channel_development and dev_role in message.author.roles:
-                return False
-
-            await self.delete(message)
-            return True
-
-        for a in message.attachments:
-            if a.is_spoiler():
-                await self.delete(message)
-                return True
-
+    async def do_newline_filter(self, message: discord.Message, db_guild):
         """
         NEWLINE FILTER
         """
