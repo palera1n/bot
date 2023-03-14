@@ -142,7 +142,7 @@ def setup_context_commands(bot: commands.Bot):
         await ctx.send_success("Generated report!")
 
     @mempro_and_up()
-    @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Generate report (More-Accessable)")
+    @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Generate report (Public)")
     async def generate_public_report_rc(interaction: discord.Interaction, member: discord.Member) -> None:
         ctx = GIRContext(interaction)
         ctx.whisper = True
@@ -151,7 +151,7 @@ def setup_context_commands(bot: commands.Bot):
         await ctx.send_success("Generated report!")
 
     @mempro_and_up()
-    @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Generate report (More-Accessable)")
+    @bot.tree.context_menu(guild=discord.Object(id=cfg.guild_id), name="Generate report (Public)")
     async def generate_public_report_msg(interaction: discord.Interaction, message: discord.Message) -> None:
         ctx = GIRContext(interaction)
         ctx.whisper = True
