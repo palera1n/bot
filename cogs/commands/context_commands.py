@@ -129,7 +129,7 @@ def setup_context_commands(bot: commands.Bot):
         ctx = GIRContext(interaction)
         ctx.whisper = True
         member = await ModsAndAboveMember.transform(interaction, member)
-        if gatekeeper.has(interaction.guild, interaction.user, 2):
+        if gatekeeper.has(interaction.guild, interaction.user, 5):
             await manual_report(ctx.author, member)
         else:
             await mempro_report(ctx.author, member)
@@ -141,7 +141,7 @@ def setup_context_commands(bot: commands.Bot):
         ctx = GIRContext(interaction)
         ctx.whisper = True
         member = await ModsAndAboveMember.transform(interaction, message.author)
-        if gatekeeper.has(interaction.guild, interaction.user, 2):
+        if gatekeeper.has(interaction.guild, interaction.user, 5):
             await manual_report(ctx.author, message)
         else:
             await mempro_report(ctx.author, message)
