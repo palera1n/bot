@@ -55,6 +55,8 @@ class OCR(commands.Cog):
                 await self.post_issue('"Killed" issue (not "Killed: 9")', msg)
             elif "furry" in text.lower():
                 await msg.reply("meow :3 🥺")
+            elif "i hate flowercat" in text.lower():
+                await msg.reply("i hate YOU.")
 
     async def post_issue(self, title, msg: discord.Message):
         message: discord.Message = self.bot.issue_cache.cache[title]
