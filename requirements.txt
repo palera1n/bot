@@ -42,3 +42,4 @@ tzdata==2021.5
 tzlocal==4.1
 ujson==4.2.0
 yarl==1.7.0
+chatgpt @ git+https://github.com/itsnebulalol/chatgpt@main
