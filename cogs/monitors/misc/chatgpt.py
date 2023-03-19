@@ -41,11 +41,13 @@ class ChatGPT(commands.Cog):
                 res = await self.context[msg.author.id].get_answer(msg.content)
             except APIError as e:
                 await msg.reply(f"Whoops! An invalid response was recieved from ChatGPT!\n\nError:\n```{e}```")
+                return
 
         try:
             await msg.reply(res)
         except discord.errors.HTTPException:
             await msg.reply("The response was too long! I've attempted to upload it as a file below.", file=discord.File(io.BytesIO(res.encode()), filename="response.txt"))
+            return
 
     chatgpt = app_commands.Group(
         name="chatgpt", description="Interact with ChatGPT", guild_ids=[cfg.guild_id])
