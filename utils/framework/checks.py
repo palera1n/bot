@@ -14,11 +14,11 @@ class PermissionsFailure(discord.app_commands.AppCommandError):
 
 
 def whisper(func: discord.app_commands.Command):
-    """If the user is not a moderator and the invoked channel is not #bot-commands, send the response to the command ephemerally"""
+    """If the user is not a helper and the invoked channel is not #bot-commands, send the response to the command ephemerally"""
 
     @functools.wraps(func)
     async def decorator(self, ctx: GIRContext, *args, **kwargs):
-        if not gatekeeper.has(ctx.guild, ctx.author, 5) and ctx.channel.id != guild_service.get_guild().channel_botspam:
+        if not gatekeeper.has(ctx.guild, ctx.author, 4) and ctx.channel.id != guild_service.get_guild().channel_botspam:
             ctx.whisper = True
         else:
             ctx.whisper = False
