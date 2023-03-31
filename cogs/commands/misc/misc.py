@@ -14,7 +14,7 @@ from PIL import Image
 from utils import (GIRContext, cfg, get_dstatus_components,
                    get_dstatus_incidents, transform_context)
 from utils.framework import (MONTH_MAPPING, Duration, gatekeeper,
-                             give_user_birthday_role, mod_and_up, whisper)
+                             give_user_birthday_role, mod_and_up, genius_and_up, whisper, whisper_helper)
 from utils.framework.transformers import ImageAttachment
 from utils.views import (PFPButton, PFPView, date_autocompleter,
                          rule_autocomplete)
@@ -39,7 +39,7 @@ class Misc(commands.Cog):
     @app_commands.describe(reminder="What do you want to be reminded of?")
     @app_commands.describe(duration="When do we remind you? (i.e 1m, 1h, 1d)")
     @transform_context
-    @whisper
+    @whisper_helper
     async def remindme(self, ctx: GIRContext, reminder: str, duration: Duration):
         now = datetime.datetime.now()
         delta = duration
@@ -217,7 +217,7 @@ class Misc(commands.Cog):
                               description=channel.topic, color=discord.Color.blue())
         await ctx.respond_or_edit(content=title, embed=embed)
 
-    @mod_and_up()
+    @genius_and_up()
     @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Start a poll")
     @app_commands.describe(question="Question to ask")
