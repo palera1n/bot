@@ -7,7 +7,7 @@ from discord.ext.commands import Command, Group
 from setuptools import Command
 from data.services.guild_service import guild_service
 from utils import cfg, GIRContext, transform_context
-from utils.framework import whisper, gatekeeper
+from utils.framework import whisper, gatekeeper, whisper_helper
 from utils.views import command_list_autocomplete
 
 # TODO: This whole thing needs work
@@ -113,7 +113,7 @@ class Utilities(commands.Cog):
     @app_commands.describe(command_name="The name of the command to get info of")
     @app_commands.autocomplete(command_name=command_list_autocomplete)
     @transform_context
-    @whisper
+    @whisper_helper
     async def usage(self, ctx: GIRContext, command_name: str):
         command_arg_split = command_name.split()
         if len(command_arg_split) > 1:
