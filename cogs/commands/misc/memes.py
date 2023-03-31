@@ -95,7 +95,7 @@ class Memes(commands.Cog):
     memes = app_commands.Group(
         name="memes", description="Interact with memes", guild_ids=[cfg.guild_id])
 
-    @mod_and_up()
+    @genius_or_submod_and_up()
     @memes.command(description="Add a new meme")
     @app_commands.describe(name="Name of the meme")
     @app_commands.describe(image="Image to show in embed")
@@ -148,7 +148,7 @@ class Memes(commands.Cog):
 
         await ctx.respond(f"Added new meme!", file=_file or discord.utils.MISSING, embed=await self.prepare_meme_embed(meme))
 
-    @mod_and_up()
+    @genius_or_submod_and_up()
     @memes.command(description="Edit an existing meme")
     @app_commands.describe(name="Name of the meme")
     @app_commands.autocomplete(name=memes_autocomplete)
@@ -202,7 +202,7 @@ class Memes(commands.Cog):
 
         await ctx.respond(f"Meme edited!", file=_file or discord.utils.MISSING, embed=await self.prepare_meme_embed(meme))
 
-    @mod_and_up()
+    @genius_or_submod_and_up()
     @memes.command(description="Delete a meme")
     @app_commands.describe(name="Name of the meme")
     @app_commands.autocomplete(name=memes_autocomplete)
@@ -254,7 +254,7 @@ class Memes(commands.Cog):
         responses = ["As I see it, yes.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.",
                      "Don’t count on it.", "It is certain.", "It is decidedly so.", "Most likely.", "My reply is no.", "My sources say no.",
                      "Outlook not so good.", "Outlook good.", "Reply hazy, try again.", "Signs point to yes.", "Very doubtful.", "Without a doubt.",
-                     "Yes.", "Yes – definitely.", "You may rely on it."]
+                     "Yes.", "Yes – definitely.", "You may rely on it.", "<:yes:1044717821399154840>"]
 
         response = random.choice(responses)
         embed = discord.Embed(color=discord.Color.blurple())
