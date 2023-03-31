@@ -26,6 +26,16 @@ def whisper(func: discord.app_commands.Command):
 
     return decorator
 
+def whisper_helper(func: discord.app_commands.Command):
+    @functools.wraps(func)
+    async def decorator(self, ctx: GIRContext, *args, **kwargs):
+        if not gatekeeper.has(ctx.guild, ctx.author, 5) and ctx.channel.id != guild_service.get_guild().channel_botspam:
+            ctx.whisper = True
+        else:
+            ctx.whisper = False
+        await func(self, ctx, *args, **kwargs)
+
+    return decorator
 
 def whisper_in_general(func: discord.app_commands.Command):
     """If the user is not a moderator and the invoked channel is #general, send the response to the command ephemerally"""
