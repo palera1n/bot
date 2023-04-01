@@ -217,7 +217,7 @@ class Misc(commands.Cog):
                               description=channel.topic, color=discord.Color.blue())
         await ctx.respond_or_edit(content=title, embed=embed)
 
-    @genius_and_up()
+    @mod_and_up()
     @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Start a poll")
     @app_commands.describe(question="Question to ask")
