@@ -61,7 +61,7 @@ class Timezones(commands.Cog):
     @app_commands.describe(zone="The timezone to set")
     @app_commands.autocomplete(zone=timezone_autocomplete)
     @transform_context
-    @whisper_helper
+    @whisper
     async def _set(self, ctx: GIRContext, zone: str):
         if zone not in pytz.common_timezones_set:
             raise commands.BadArgument("Timezone was not found!")
@@ -78,7 +78,7 @@ class Timezones(commands.Cog):
 
     @timezone.command(name="remove", description="Remove your timezone from the database")
     @transform_context
-    @whisper_helper
+    @whisper
     async def remove(self, ctx: GIRContext):
         db_user = user_service.get_user(ctx.author.id)
         db_user.timezone = None
