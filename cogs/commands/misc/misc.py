@@ -39,7 +39,7 @@ class Misc(commands.Cog):
     @app_commands.describe(reminder="What do you want to be reminded of?")
     @app_commands.describe(duration="When do we remind you? (i.e 1m, 1h, 1d)")
     @transform_context
-    @whisper_helper
+    @whisper
     async def remindme(self, ctx: GIRContext, reminder: str, duration: Duration):
         now = datetime.datetime.now()
         delta = duration
