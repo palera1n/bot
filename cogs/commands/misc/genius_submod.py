@@ -334,6 +334,27 @@ class Genius(commands.Cog):
         await asyncio.sleep(5)
 
         await ctx.channel.edit(archived=True, locked=True)
+        
+    @app_commands.guilds(cfg.guild_id)
+    @app_commands.command(description="Close a forum thread without locking, usable by OP and Geniuses")
+    @transform_context
+    async def close(self, ctx: GIRContext):
+        if not isinstance(ctx.channel, discord.Thread) or not isinstance(ctx.channel.parent, discord.ForumChannel):
+            raise commands.BadArgument("This command can only be called in a forum thread!")
+
+        if ctx.author != ctx.channel.owner: # let OP delete their own thread and geniuses and up
+            if not gatekeeper.has(ctx.guild, ctx.author, 4):
+                raise commands.BadArgument("You do not have permission to run that command.")
+
+            if not gatekeeper.has(ctx.guild, ctx.author, 5) and ctx.channel.owner is not None and ctx.channel.owner.top_role >= ctx.guild.me.top_role:
+                # otherwise, only allow if the thread owner is a Genius or higher
+                # as long as their role is higher than OP
+                raise commands.BadArgument("Your top role must be higher than the thread owner!")
+
+        await ctx.send_success("This thread has been marked as solved. Archiving this channel!")
+        await asyncio.sleep(5)
+
+        await ctx.channel.edit(archived=True)
 
     @commands.Cog.listener()
     async def on_thread_create(self, thread: discord.Thread):
