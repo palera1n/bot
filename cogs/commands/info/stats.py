@@ -21,7 +21,7 @@ class Stats(commands.Cog):
     @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Test server latency by measuring how long it takes to edit a message")
     @transform_context
-    @whisper_helper
+    @whisper
     async def ping(self, ctx: GIRContext) -> None:
         embed = discord.Embed(
             title="Pong!", color=discord.Color.blurple())
@@ -45,7 +45,7 @@ class Stats(commands.Cog):
     @app_commands.command(description="Get number of users of a role")
     @app_commands.describe(role="The role's ID")
     @transform_context
-    @whisper_helper
+    @whisper
     async def roleinfo(self, ctx: GIRContext, role: discord.Role) -> None:
         embed = discord.Embed(title="Role Statistics")
         embed.description = f"{len(role.members)} members have role {role.mention}"
@@ -103,7 +103,7 @@ class Stats(commands.Cog):
     @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Present statistics on who has been banned for raids.")
     @transform_context
-    @whisper_helper
+    @whisper
     async def raidstats(self, ctx: GIRContext) -> None:
         embed = discord.Embed(title="Raid Statistics",
                               color=discord.Color.blurple())
