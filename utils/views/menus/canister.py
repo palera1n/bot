@@ -23,6 +23,7 @@ default_repos = [
     "repo.chimera.sh",
     "diatr.us/apt",
     "repo.theodyssey.dev",
+    "repo.palera.in"
 ]
 
 
