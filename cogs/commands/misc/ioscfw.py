@@ -353,7 +353,6 @@ class iOSCFW(commands.Cog):
     @app_commands.describe(version="Version of iOS you want to jailbreak")
     @app_commands.autocomplete(version=ios_on_device_autocomplete)
     @transform_context
-    @whisper
     async def canijailbreak(self, ctx: GIRContext, device: DeviceTransformer, version: VersionOnDevice) -> None:
         response = await get_ios_cfw()
         found_jbs = []

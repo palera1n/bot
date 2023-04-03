@@ -14,7 +14,7 @@ from PIL import Image
 from utils import (GIRContext, cfg, get_dstatus_components,
                    get_dstatus_incidents, transform_context)
 from utils.framework import (MONTH_MAPPING, Duration, gatekeeper,
-                             give_user_birthday_role, mod_and_up, whisper)
+                             give_user_birthday_role, mod_and_up, genius_and_up, whisper, whisper_helper)
 from utils.framework.transformers import ImageAttachment
 from utils.views import (PFPButton, PFPView, date_autocompleter,
                          rule_autocomplete)

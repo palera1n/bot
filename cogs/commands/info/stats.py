@@ -10,7 +10,7 @@ from discord import app_commands
 from discord.ext import commands
 from discord.utils import format_dt
 from utils import GIRContext, cfg, transform_context, format_number
-from utils.framework import mod_and_up, whisper
+from utils.framework import mod_and_up, whisper, whisper_helper
 
 
 class Stats(commands.Cog):
