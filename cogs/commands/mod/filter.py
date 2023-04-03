@@ -88,6 +88,9 @@ class Filters(commands.Cog):
         if not guild_service.add_filtered_word(fw):
             raise commands.BadArgument("That word is already filtered!")
 
+        if not gatekeeper.has(ctx.guild, ctx.author, bypass):
+            raise commands.BadArgument("You cannot set the bypass level above your level!")
+
         phrase = discord.utils.escape_markdown(phrase)
         phrase = discord.utils.escape_mentions(phrase)
 
