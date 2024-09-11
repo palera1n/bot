@@ -136,7 +136,7 @@ class UserInfo(commands.Cog):
         self.bot = bot
         self.start_time = datetime.now()
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Get info of another user or yourself.")
     @app_commands.describe(user="User to get info of")
     @transform_context

@@ -16,7 +16,7 @@ class Utilities(commands.Cog):
         self.mod_only = ["ModActions", "ModUtils", "Filters", "BoosterEmojis", "RoleAssignButtons", "Giveaway", "Admin", "AntiRaid", "Trivia"]
         self.genius_only = ["Genius"]
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="View all my cogs and commands.")
     @app_commands.describe(command_name="The name of the command to get info of")
     @app_commands.autocomplete(command_name=command_list_autocomplete)

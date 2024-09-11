@@ -139,7 +139,7 @@ class Tasks():
         self.tasks.add_job(end_giveaway_callback, 'date', id=str(
             message_id+2), next_run_time=date, args=[channel_id, message_id, winners], misfire_grace_time=3600)
 
-    def schedule_reminder(self, _id: int, reminder: str, date: datetime) -> None:
+    def schedule_reminder(self, _id: int, guild: int, channel: int, reminder: str, date: datetime) -> None:
         """Create a task to remind someone of id `_id` of something `reminder` at time `date`
 
         Parameters
@@ -154,7 +154,7 @@ class Tasks():
         """
 
         self.tasks.add_job(reminder_callback, 'date', id=str(
-            _id+random.randint(5, 100)), next_run_time=date, args=[_id, reminder], misfire_grace_time=3600)
+            _id+random.randint(5, 100)), next_run_time=date, args=[_id, guild, channel, reminder], misfire_grace_time=3600)
 
     def schedule_remove_new_member_role(self, member_id: int) -> None:
         """Create a task to remove new member role from user given by ID `_id`, at time `date`
@@ -233,36 +233,51 @@ async def remove_timeout(_id: int) -> None:
     await public_chan.send(user.mention if not dmed else "", embed=log)
 
 
-def reminder_callback(id: int, reminder: str):
-    BOT_GLOBAL.loop.create_task(remind(id, reminder))
+def reminder_callback(id: int, guild: int, channel: int, reminder: str):
+    BOT_GLOBAL.loop.create_task(remind(id, guild, channel, reminder))
 
 
-async def remind(_id, reminder):
+async def remind(_id, guild_id, channel_id, reminder):
     """Remind the user callback
 
     Parameters
     ----------
     _id : int
         ID of user to remind
+    channel_id : int
+        ID of the channel to fall back to if DM fails
     reminder : str
         body of reminder
 
     """
 
-    guild = BOT_GLOBAL.get_guild(cfg.guild_id)
+    guild = BOT_GLOBAL.get_guild(guild_id)
     if guild is None:
         return
+    
     member = guild.get_member(_id)
     if member is None:
         return
 
     embed = discord.Embed(
-        title="Reminder!", description=f"*You wanted me to remind you something... What was it... Oh right*:\n\n{reminder}", color=discord.Color.random())
+        title="Reminder!",
+        description=f"*You wanted me to remind you something... What was it... Oh right*:\n\n{reminder}",
+        color=discord.Color.random()
+    )
+    
     try:
         await member.send(embed=embed)
     except Exception:
-        channel = guild.get_channel(cfg.channels.bot_commands)
-        await channel.send(member.mention, embed=embed)
+        try:
+            channel = await guild.fetch_channel(channel_id)
+            await channel.send(f"{member.mention}", embed=embed)
+        except discord.NotFound:
+            print("Channel not found.")
+        except discord.Forbidden:
+            print("Bot doesn't have permission to access the channel.")
+        except discord.HTTPException as e:
+            print(f"HTTP exception occurred: {e}")
+
 
 
 def remove_bday_callback(_id: int) -> None:

@@ -2,9 +2,14 @@ import os
 import platform
 from datetime import datetime
 from math import floor
+import socket
+import platform
+import subprocess
 
 import discord
 import psutil
+from datetime import datetime
+
 from data.services import user_service
 from discord import app_commands
 from discord.ext import commands
@@ -12,16 +17,87 @@ from discord.utils import format_dt
 from utils import GIRContext, cfg, transform_context, format_number
 from utils.framework import mod_and_up, whisper
 
+def get_cpu_model():
+    try:
+        if platform.system() == "Windows":
+            result = subprocess.check_output("wmic cpu get caption", shell=True).decode().strip()
+            return result.split('\n')[1].strip()
+        elif platform.system() == "Linux":
+            result = subprocess.check_output("lscpu | grep 'Model name:'", shell=True).decode().strip()
+            return result.split(':')[1].strip()
+        elif platform.system() == "Darwin":  # macOS
+            result = subprocess.check_output("sysctl -n machdep.cpu.brand_string", shell=True).decode().strip()
+            return result
+        else:
+            return "Unknown CPU model"
+    except Exception as e:
+        return f"Error: {e}"
+
+def get_gpu_model():
+    try:
+        if platform.system() == "Windows":
+            result = subprocess.check_output("wmic path win32_VideoController get Caption", shell=True).decode().strip()
+            return result.split('\n')[1].strip()
+        elif platform.system() == "Linux":
+            result = subprocess.check_output("lspci | grep -i 'vga'", shell=True).decode().strip()
+            return result.split(':')[2].strip()
+        elif platform.system() == "Darwin":  # macOS
+            result = subprocess.check_output("system_profiler SPDisplaysDataType | grep 'Chipset Model:'", shell=True).decode().strip()
+            return result.split(':')[1].strip()
+        else:
+            return "Unknown GPU model"
+    except Exception as e:
+        return f"Error: {e}"
+    
+def get_os_info():
+    try:
+        if platform.system() == "Linux":
+            result = subprocess.check_output("lsb_release -a", shell=True).decode().strip()
+            lines = result.split('\n')
+            os_info = {}
+            for line in lines:
+                key, value = line.split(':', 1)
+                os_info[key.strip()] = value.strip()
+            return f"{os_info.get('Distributor ID', 'Unknown')} {os_info.get('Release', 'Unknown')} {os_info.get('Codename', '')}"
+        
+        elif platform.system() == "Darwin":  # macOS
+            result = subprocess.check_output("sw_vers", shell=True).decode().strip()
+            lines = result.split('\n')
+            os_info = {}
+            for line in lines:
+                key, value = line.split(':', 1)
+                os_info[key.strip()] = value.strip()
+            return f"{os_info.get('ProductName', 'Unknown')} {os_info.get('ProductVersion', 'Unknown')} {os_info.get('BuildVersion', '')}"
+        
+        else:
+            return "OS information not available"
+    
+    except Exception as e:
+        return f"Error: {e}"
+    
+
+def get_current_user():
+    try:
+        pid = os.getpid()
+        process = psutil.Process(pid)
+        user = process.username()
+        return user
+    except psutil.NoSuchProcess:
+        return "unknown"
+    except psutil.AccessDenied:
+        return "unknown"
+    except:
+        return "unknown"
 
 class Stats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.start_time = datetime.now()
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Test server latency by measuring how long it takes to edit a message")
     @transform_context
-    @whisper
+    # @whisper
     async def ping(self, ctx: GIRContext) -> None:
         embed = discord.Embed(
             title="Pong!", color=discord.Color.blurple())
@@ -41,7 +117,7 @@ class Stats(commands.Cog):
 
         await ctx.respond_or_edit(embed=embed)
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Get number of users of a role")
     @app_commands.describe(role="The role's ID")
     @transform_context
@@ -53,10 +129,10 @@ class Stats(commands.Cog):
 
         await ctx.respond(embed=embed, ephemeral=ctx.whisper)
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Statistics about the bot")
     @transform_context
-    @whisper
+    # @whisper
     async def stats(self, ctx: GIRContext) -> None:
         process = psutil.Process(os.getpid())
 
@@ -67,12 +143,56 @@ class Stats(commands.Cog):
             self.start_time, style='R'))
         embed.add_field(name="CPU Usage", value=f"{psutil.cpu_percent()}%")
         embed.add_field(name="Memory Usage",
-                        value=f"{floor(process.memory_info().rss/1000/1000)} MB")
+                        value=f"{floor(process.memory_info().rss/1000/1000)} MiB")
         embed.add_field(name="Python Version", value=platform.python_version())
 
         await ctx.respond(embed=embed, ephemeral=ctx.whisper)
 
-    @app_commands.guilds(cfg.guild_id)
+
+    
+
+    # @app_commands.guilds(cfg.guild_id)
+    @app_commands.command(description="Statistics about OS")
+    @transform_context
+    # @whisper
+    async def neofetch(self, ctx: GIRContext) -> None:
+        now = datetime.utcnow()
+        boot_time = datetime.fromtimestamp(psutil.boot_time())
+        uptime = now - boot_time
+        past_date = now - uptime
+
+        embed = discord.Embed(
+            title=f"{get_current_user()}@{socket.gethostname()}", color=discord.Color.blurple())
+        embed.set_thumbnail(url=self.bot.user.display_avatar)
+
+        embed.add_field(name="OS", value=get_os_info())
+
+        embed.add_field(name="Kernel", value=f"{platform.system()} {platform.release()}")
+
+        days, remainder = divmod(uptime.total_seconds(), 86400)
+        hours, remainder = divmod(remainder, 3600)
+        minutes, _ = divmod(remainder, 60)
+        uptime_str = f"{int(days)} day(s), {int(hours)} hour(s), {int(minutes)} min(s)"
+        uptime_str = format_dt(past_date, style='R')
+
+        embed.add_field(name="Uptime", value=uptime_str)
+        embed.add_field(name="CPU Model", value=get_cpu_model())
+        embed.add_field(name="GPU Model", value=get_gpu_model())
+
+        # Memory Usage
+        total_memory = psutil.virtual_memory().total
+        available_memory = psutil.virtual_memory().available
+        used_memory = total_memory - available_memory
+    
+        memory_usage_total = f"{floor(used_memory / 1024 / 1024)} MiB / {floor(total_memory / 1024 / 1024)} MiB"
+        embed.add_field(name="Memory", value=f"{memory_usage_total}")
+
+        cpu_usage = psutil.cpu_percent(interval=1)
+        embed.add_field(name="CPU Usage", value=f"{cpu_usage}%")
+
+        await ctx.respond(embed=embed, ephemeral=ctx.whisper)
+
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Displays info about the server")
     @transform_context
     @whisper

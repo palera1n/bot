@@ -1,6 +1,8 @@
 import json
 import urllib
 
+from pathlib import Path
+
 import aiohttp
 from aiocache import cached
 
@@ -9,7 +11,7 @@ client_session = None
 
 @cached(ttl=3600)
 async def get_ios_cfw():
-    """Gets all apps on ios.cfw.guide
+    """Gets all apps on ios.cfw.guide from a local JSON file.
 
     Returns
     -------
@@ -17,11 +19,14 @@ async def get_ios_cfw():
         "ios, jailbreaks, devices"
     """
 
-    async with client_session.get("https://api.appledb.dev/main.json") as resp:
-        if resp.status == 200:
-            data = await resp.json()
+    json_file_path = Path("main.json")
 
-    return data
+    if json_file_path.exists():
+        with json_file_path.open("r", encoding="utf-8") as file:
+            data = json.load(file)
+        return data
+    else:
+        raise FileNotFoundError(f"The file {json_file_path} does not exist.")
 
 
 @cached(ttl=3600)

@@ -34,7 +34,7 @@ class Misc(commands.Cog):
             raise Exception(
                 "Could not find emojis.json. Make sure to run scrape_emojis.py")
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Send yourself a reminder after a given time gap")
     @app_commands.describe(reminder="What do you want to be reminded of?")
     @app_commands.describe(duration="When do we remind you? (i.e 1m, 1h, 1d)")
@@ -53,14 +53,15 @@ class Misc(commands.Cog):
         reminder = discord.utils.escape_markdown(reminder)
 
         try:
-            ctx.tasks.schedule_reminder(ctx.author.id, reminder, time)
-        except:
+            ctx.tasks.schedule_reminder(ctx.author.id, ctx.guild.id, ctx.channel.id, reminder, time)
+        except Exception as e:
+            print(f"Error scheduling reminder: {e}")
             raise commands.BadArgument("Could not schedule reminder, you probably have too many reminders already!")
 
         await ctx.send_success(title="Reminder set", description=f"We'll remind you {discord.utils.format_dt(time, style='R')}", delete_after=5)
 
     # TODO: emoji transformer
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Post large version of a given emoji")
     @app_commands.describe(emoji="The emoji you want to get the large version of")
     @transform_context
@@ -140,7 +141,7 @@ class Misc(commands.Cog):
         if today.month == month and today.day == date:
             await give_user_birthday_role(self.bot, ctx.author, ctx.guild)
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Get avatar of another user or yourself.")
     @app_commands.describe(user="The user you want to get the avatar of")
     @transform_context
@@ -197,7 +198,7 @@ class Misc(commands.Cog):
 
         await ctx.respond_or_edit(content=title, embed=embed)
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Get the topic for a channel")
     @app_commands.describe(channel="Channel to get the topic for")
     @app_commands.describe(user_to_mention="User to mention in response")
@@ -249,7 +250,7 @@ class Misc(commands.Cog):
         ctx.whisper = True
         await ctx.send_success("Done!")
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="View the status of various Discord features")
     @transform_context
     @whisper

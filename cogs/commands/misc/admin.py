@@ -35,18 +35,42 @@ class Admin(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def sync(self, ctx: commands.Context):
+    async def sync(self, ctx: commands.Context, guild_id: int = None):
         if ctx.author.id != cfg.owner_id:
             return
 
         try:
             async with ctx.typing():
-                await self.bot.tree.sync(guild=discord.Object(id=cfg.guild_id))
+                await self.bot.tree.sync()
         except Exception as e:
             await ctx.send(f"An error occured\n```{e}```")
             logger.error(traceback.format_exc())
         else:
             await ctx.send("Done!")
+
+
+    @commands.command()
+    @commands.is_owner()
+    async def clear_guild_commands(self, ctx: commands.Context, guild_id: int):
+        """Remove all commands from a specific guild."""
+        if ctx.author.id != cfg.owner_id:
+            return
+
+        try:
+            async with ctx.typing():
+
+                guild = self.bot.get_guild(guild_id)
+                if guild is None:
+                    await ctx.send(f"Guild with ID {guild_id} not found or not cached.")
+                    return
+                
+
+                self.bot.tree.clear_commands(guild=guild)
+
+            await ctx.send(f"Removed all commands from guild with ID {guild_id}.")
+        except Exception as e:
+            await ctx.send(f"An error occurred\n```{e}```")
+            logger.error(traceback.format_exc())
 
 async def setup(bot):
     await bot.add_cog(Admin(bot))

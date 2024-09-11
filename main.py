@@ -6,7 +6,7 @@ from discord.ext import commands
 from discord import app_commands
 from discord.app_commands import AppCommandError, Command, ContextMenu, CommandInvokeError, TransformerError
 from extensions import initial_extensions
-from utils import cfg, db, logger, GIRContext, BanCache, IssueCache, Tasks, RuleCache, init_client_session, scam_cache
+from utils import cfg, db, logger, GIRContext, BanCache, IssueCache, Tasks, RuleCache, init_client_session, scam_cache, get_ios_cfw
 from utils.framework import PermissionsFailure, gatekeeper, find_triggered_filters
 from cogs.commands.context_commands import setup_context_commands
 
@@ -160,7 +160,7 @@ async def on_ready():
     await bot.issue_cache.fetch_issue_cache()
     await bot.rule_cache.fetch_rule_cache()
     await scam_cache.fetch_scam_cache()
-
+    await get_ios_cfw()
 
 async def main():
     async with bot:

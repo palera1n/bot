@@ -97,6 +97,9 @@ class Filter(commands.Cog):
         await self.detect_cij_or_eta(message)
 
     async def nick_filter(self, member):
+        if member.guild.id != cfg.guild_id:
+            return
+
         triggered_words = await find_triggered_filters(
             member.display_name, member)
 

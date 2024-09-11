@@ -56,7 +56,11 @@ class Xp(commands.Cog):
         await self.add_new_roles(message, roles_to_add)
 
     def assess_new_roles(self, new_level, member: discord.Member):
+        if member.guild.id != cfg.guild_id:
+            return
+
         roles_to_add = []
+        
         if 15 > new_level and cfg.roles.new_member is not None:
             roles_to_add.append(cfg.roles.new_member)
             self.bot.tasks.schedule_remove_new_member_role(cfg.roles.new_member, member.id)

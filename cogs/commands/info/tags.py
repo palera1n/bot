@@ -81,7 +81,7 @@ class Tags(commands.Cog):
         self.tag_cooldown = CooldownMapping.from_cooldown(
             1, 5, MessageTextBucket.custom)
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Display a tag")
     @app_commands.describe(name="Name of the tag to display")
     @app_commands.describe(user_to_mention="Member to ping in response")
@@ -146,7 +146,7 @@ class Tags(commands.Cog):
         else:
             await ctx.message.reply(embed=prepare_tag_embed(tag), view=prepare_tag_view(tag), file=_file, mention_author=False)
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="List all tags")
     @transform_context
     @whisper

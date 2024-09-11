@@ -88,7 +88,7 @@ class iOSCFW(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Get info about a jailbreak.")
     @app_commands.describe(name="Name of the jailbreak")
     @app_commands.autocomplete(name=jb_autocomplete)
@@ -167,7 +167,7 @@ class iOSCFW(commands.Cog):
 
         await ctx.respond_or_edit(content=title, embed=embed, ephemeral=ctx.whisper, view=view)
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Get info about an iOS version.")
     @app_commands.describe(version="Version to get info about")
     @app_commands.autocomplete(version=ios_version_autocomplete)
@@ -191,7 +191,7 @@ class iOSCFW(commands.Cog):
         embed, view = await self.do_firmware_response(ctx, matching_ios)
         await ctx.respond(embed=embed, view=view, ephemeral=ctx.whisper)
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Get info about a beta iOS version.")
     @app_commands.describe(version="Beta version to get info about")
     @app_commands.autocomplete(version=ios_beta_version_autocomplete)
@@ -272,13 +272,14 @@ class iOSCFW(commands.Cog):
 
         return embed, view
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Get info about an Apple device.")
     @app_commands.describe(device="Name or device identifier")
     @app_commands.autocomplete(device=device_autocomplete)
     @transform_context
     @whisper_in_general
     async def deviceinfo(self, ctx: GIRContext, device: str) -> None:
+        await ctx.defer()
         response = await get_ios_cfw()
         all_devices = response.get("group")
         transformed_devices = transform_groups(all_devices)
@@ -346,7 +347,7 @@ class iOSCFW(commands.Cog):
 
         await ctx.respond(embed=embed, view=view, ephemeral=ctx.whisper)
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Find out if you can jailbreak your device")
     @app_commands.describe(device="Name or device identifier of the device")
     @app_commands.autocomplete(device=jailbreakable_device_autocomplete)
@@ -355,6 +356,7 @@ class iOSCFW(commands.Cog):
     @transform_context
     @whisper
     async def canijailbreak(self, ctx: GIRContext, device: DeviceTransformer, version: VersionOnDevice) -> None:
+        await ctx.defer()
         response = await get_ios_cfw()
         found_jbs = []
         jailbreaks = response.get("jailbreak")
@@ -402,7 +404,7 @@ class iOSCFW(commands.Cog):
                            show_skip_buttons=False, whisper=ctx.whisper)
             await menu.start()
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Find out how to bypass jailbreak detection for an app")
     @app_commands.describe(app="Name of the app")
     @app_commands.autocomplete(app=bypass_autocomplete)

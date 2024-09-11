@@ -246,7 +246,7 @@ class Memes(commands.Cog):
             text=f"Added by {meme.added_by_tag} | Used {meme.use_count} {'time' if meme.use_count == 1 else 'times'}")
         return embed
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(name="8ball", description="Ask a question and the bot will answer with Magic!")
     @app_commands.describe(question="Question to ask")
     @transform_context
@@ -265,7 +265,7 @@ class Memes(commands.Cog):
         await ctx.respond(embed=embed, ephemeral=ctx.whisper)
 
     @mempro_and_up()
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Classify an image with Magic!")
     @app_commands.describe(image="Image to classify")
     @transform_context

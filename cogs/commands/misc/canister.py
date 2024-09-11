@@ -17,7 +17,7 @@ class Canister(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.guild is None or message.guild.id != cfg.guild_id:
+        if message.guild is None:
             return
 
         author = message.guild.get_member(message.author.id)
@@ -66,7 +66,7 @@ class Canister(commands.Cog):
         new_ctx = await self.bot.get_context(message)
         td.start(new_ctx)
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Search for a jailbreak tweak or package")
     @app_commands.describe(query="Name of package to search for")
     @transform_context
@@ -97,7 +97,7 @@ class Canister(commands.Cog):
         await ctx.respond(embed=await td.format_tweak_page(result[0]), view=view)
         td.start(ctx)
 
-    @app_commands.guilds(cfg.guild_id)
+    # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="Search for a tweak repository")
     @app_commands.describe(query="Name of repository to search for")
     @app_commands.autocomplete(query=repo_autocomplete)
