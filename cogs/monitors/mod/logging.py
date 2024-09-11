@@ -325,50 +325,48 @@ class Logging(commands.Cog):
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_user_update(self, before: discord.Member, after: discord.Member):
-        if after.guild.id != cfg.guild_id:
-            return
-        
-        if before.name == after.name and before.discriminator == after.discriminator:
-            return
-
-        guild = self.bot.get_guild(cfg.guild_id)
-        channel = guild.get_channel(cfg.channels.private_logs)
-
-        embed = discord.Embed(title="Username Updated")
-        embed.color = discord.Color.magenta()
-        embed.add_field(
-            name="Before", value=f'{before} ({before.mention})', inline=True)
-        embed.add_field(
-            name="After", value=f'{after} ({after.mention})', inline=True)
-        embed.timestamp = datetime.now()
-        embed.set_footer(text=before.id)
-        await channel.send(embed=embed)
-
-    @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         if after.guild.id != cfg.guild_id:
             return
+        
         if not before or not after:
             return
+
         if before.display_name != after.display_name:
             await self.member_nick_update(before, after)
             return
+
         if before.timed_out_until != after.timed_out_until:
             await self.member_timeout_update(before, after)
             return
 
-        new_roles = [role.mention
-                     for role in after.roles if role not in before.roles]
+        new_roles = [role.mention for role in after.roles if role not in before.roles]
         if new_roles:
             await self.member_roles_update(member=after, roles=new_roles, added=True)
             return
 
-        removed_roles = [role.mention
-                         for role in before.roles if role not in after.roles]
+        removed_roles = [role.mention for role in before.roles if role not in after.roles]
         if removed_roles:
             await self.member_roles_update(member=after, roles=removed_roles, added=False)
             return
+
+        if before.name != after.name or before.discriminator != after.discriminator:
+            guild = self.bot.get_guild(cfg.guild_id)
+            channel = guild.get_channel(cfg.channels.private_logs)
+
+            embed = discord.Embed(title="Username Updated")
+            embed.color = discord.Color.magenta()
+            embed.add_field(
+                name="Before", value=f'{before} ({before.mention})', inline=True)
+            embed.add_field(
+                name="After", value=f'{after} ({after.mention})', inline=True)
+            embed.timestamp = datetime.now()
+            embed.set_footer(text=before.id)
+
+            await channel.send(embed=embed)
+            return
+
+
 
     async def member_nick_update(self, before, after):
         embed = discord.Embed(title="Member Renamed")
