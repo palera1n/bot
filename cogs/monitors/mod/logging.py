@@ -325,7 +325,7 @@ class Logging(commands.Cog):
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_user_update(self, before: discord.User, after: discord.User):
+    async def on_user_update(self, before: discord.Member, after: discord.Member):
         if after.guild.id != cfg.guild_id:
             return
         
