@@ -176,7 +176,7 @@ class Stats(commands.Cog):
         uptime_str = format_dt(past_date, style='R')
 
         embed.add_field(name="Uptime", value=uptime_str)
-        embed.add_field(name="CPU Model", value=get_cpu_model())
+        # embed.add_field(name="CPU Model", value=get_cpu_model())
         embed.add_field(name="GPU Model", value=get_gpu_model())
 
         # Memory Usage
