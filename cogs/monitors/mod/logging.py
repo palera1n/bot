@@ -229,7 +229,7 @@ class Logging(commands.Cog):
 
         members = set()
         db_guild = guild_service.get_guild()
-        if message[0].channel.id in db_guild.logging_excluded_channels:
+        if messages[0].channel.id in db_guild.logging_excluded_channels:
             return
 
         channel = messages[0].guild.get_channel(cfg.channels.private_logs)
@@ -326,6 +326,9 @@ class Logging(commands.Cog):
 
     @commands.Cog.listener()
     async def on_user_update(self, before: discord.User, after: discord.User):
+        if after.guild.id != cfg.guild_id:
+            return
+        
         if before.name == after.name and before.discriminator == after.discriminator:
             return
 
