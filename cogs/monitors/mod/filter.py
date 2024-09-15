@@ -91,8 +91,8 @@ class Filter(commands.Cog):
 
         if message.content and await self.do_invite_filter(message):
             return
-        if await self.do_spoiler_newline_filter(message):
-            return
+        # if await self.do_spoiler_newline_filter(message):
+        #     return
 
         await self.detect_cij_or_eta(message)
 
