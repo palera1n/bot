@@ -253,7 +253,7 @@ class Misc(commands.Cog):
     # @app_commands.guilds(cfg.guild_id)
     @app_commands.command(description="View the status of various Discord features")
     @transform_context
-    @whisper
+    # @whisper
     async def dstatus(self, ctx):
         components = await get_dstatus_components()
         incidents = await get_dstatus_incidents()
