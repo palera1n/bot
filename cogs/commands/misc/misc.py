@@ -251,8 +251,7 @@ class Misc(commands.Cog):
         await ctx.send_success("Done!")
 
     # @app_commands.guilds(cfg.guild_id)
-    @app_commands.command(description="View the status of various Discord features")
-    @transform_context
+    @commands.command()
     # @whisper
     async def dstatus(self, ctx):
         components = await get_dstatus_components()
@@ -311,7 +310,7 @@ __**Last outage information**__
 **{'Resolved at' if last_status == 'Resolved' else 'Last updated'}:** {format_dt(last_update, style='F')}
         """, color=color)
         embed.set_footer(text="Powered by discordstatus.com")
-        await ctx.respond(embed=embed, ephemeral=ctx.whisper)
+        await ctx.send(embed=embed)
 
 
 async def setup(bot):
