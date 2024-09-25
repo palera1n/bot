@@ -72,5 +72,22 @@ class Admin(commands.Cog):
             await ctx.send(f"An error occurred\n```{e}```")
             logger.error(traceback.format_exc())
 
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        allowed_guild_id = 123456789012345678
+        if message.guild and message.guild.id == allowed_guild_id:
+            if message.content.lower().strip() == "fr this user":
+                if message.reference and isinstance(message.reference.resolved, discord.Message):
+                    ref_message = message.reference.resolved
+                    try:
+                        await ref_message.add_reaction("<:fr:1024751426750132284>")
+                    except discord.Forbidden:
+                        await print("Bot does not have permission to add reactions")
+                    except discord.HTTPException as e:
+                        await print("Failed to add")
+            await self.bot.process_commands(message)
+        else:
+            print("Doesn't work here!")
+
 async def setup(bot):
     await bot.add_cog(Admin(bot))
