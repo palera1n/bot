@@ -278,36 +278,49 @@ class Misc(commands.Cog):
         color = discord.Color.green(
         ) if title == "All Systems Operational" else discord.Color.orange()
 
-        last_incident = incidents.get('incidents')[0].get('name')
-        last_status = incidents.get('incidents')[0].get('status').title()
-        last_created = datetime.datetime.strptime(incidents.get(
-            'incidents')[0].get('created_at'), "%Y-%m-%dT%H:%M:%S.%f%z")
-        last_update = datetime.datetime.strptime(incidents.get(
-            'incidents')[0].get('updated_at'), "%Y-%m-%dT%H:%M:%S.%f%z")
-        last_impact = incidents.get('incidents')[0].get('impact')
+        monitoring_or_investigating_incidents = [
+            incident for incident in incidents.get('incidents')
+            if incident.get('status').lower() in ['monitoring', 'investigating']
+        ]
+
+        if not monitoring_or_investigating_incidents:
+            last_incident_info = "All ongoing incidents have been resolved."
+        else:
+            last_incident_info = ""
+            for incident in monitoring_or_investigating_incidents:
+                last_incident = incident.get('name')
+                last_status = incident.get('status').title()
+                last_created = datetime.datetime.strptime(incident.get(
+                    'created_at'), "%Y-%m-%dT%H:%M:%S.%f%z")
+                last_update = datetime.datetime.strptime(incident.get(
+                    'updated_at'), "%Y-%m-%dT%H:%M:%S.%f%z")
+                last_impact = incident.get('impact')
+
+                incident_icons = {'none': '⚫',
+                                  'maintenance': '🟡',
+                                  'minor': '🟡',
+                                  'major': '🔴',
+                                  'critical': '🔴'}
+
+                last_incident_info += f"""
+**Incident:** {incident_icons.get(last_impact)} {last_incident}
+**Status:** 🔴 {last_status}
+**Identified at:** {format_dt(last_created, style='F')}
+**{'Resolved at' if last_status == 'Resolved' else 'Last updated'}:** {format_dt(last_update, style='F')}
+                """
 
         online = '🟢'
         offline = '🔴'
 
-        incident_icons = {'none': '⚫',
-                          'maintenance': '🟡',
-                          'minor': '🟡',
-                          'major': '🔴',
-                          'critical': '🔴'}
-
         embed = discord.Embed(title=title, description=f"""
-{online if api_status == 'Operational' else offline} **API:** {api_status}
-{online if mp_status == 'Operational' else offline} **Media Proxy:** {mp_status}
-{online if pn_status == 'Operational' else offline} **Push Notifications:** {pn_status}
-{online if s_status == 'Operational' else offline} **Search:** {s_status}
-{online if v_status == 'Operational' else offline} **Voice:** {v_status}
-{online if cf_status == 'Operational' else offline} **Cloudflare:** {cf_status}
-
-__**Last outage information**__
-**Incident:** {incident_icons.get(last_impact)} {last_incident}
-**Status:** {online if last_status == 'Resolved' else offline} {last_status}
-**Identified at:** {format_dt(last_created, style='F')}
-**{'Resolved at' if last_status == 'Resolved' else 'Last updated'}:** {format_dt(last_update, style='F')}
+    {online if api_status == 'Operational' else offline} **API:** {api_status}
+    {online if mp_status == 'Operational' else offline} **Media Proxy:** {mp_status}
+    {online if pn_status == 'Operational' else offline} **Push Notifications:** {pn_status}
+    {online if s_status == 'Operational' else offline} **Search:** {s_status}
+    {online if v_status == 'Operational' else offline} **Voice:** {v_status}
+    {online if cf_status == 'Operational' else offline} **Cloudflare:** {cf_status}
+    
+    __**Ongoing incidents**__ {last_incident_info}
         """, color=color)
         embed.set_footer(text="Powered by discordstatus.com")
         await ctx.send(embed=embed)
