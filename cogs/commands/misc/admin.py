@@ -35,6 +35,81 @@ class Admin(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
+    async def carchive(self, ctx: commands.Context):
+        channel = ctx.channel
+        guild = ctx.guild
+        bot_member = guild.get_member(self.bot.user.id)
+
+        if ctx.author.id != cfg.owner_id:
+            return
+
+        if guild is None:
+            await ctx.send("This command can only be used in a guild.")
+            return
+
+        if not bot_member.guild_permissions.administrator:
+            await ctx.send("Bot does not have administrator permissions.")
+            return
+
+        await ctx.send("Attempting..")
+        
+        try:
+            await self.archive_channel(channel)
+            await ctx.send(f"Channel {channel.name} has been archived!")
+        except discord.Forbidden:
+            await ctx.send(f"Bot does not have permission to modify {channel.name}.")
+        except discord.HTTPException as e:
+            await ctx.send(f"Failed to modify {channel.name}: {e}")
+
+    @commands.command()
+    @commands.is_owner()
+    async def archive(self, ctx: commands.Context):
+        guild = ctx.guild
+        bot_member = guild.get_member(self.bot.user.id)
+
+        if ctx.author.id != cfg.owner_id:
+            return
+
+        if guild is None:
+            await ctx.send("This command can only be used in a guild.")
+            return
+
+        if not bot_member.guild_permissions.administrator:
+            await ctx.send("Bot does not have administrator permissions.")
+            return
+
+        await ctx.send("Attempting..")
+
+        for channel in guild.channels:
+            try:
+                await self.archive_channel(channel)
+            except discord.Forbidden:
+                await ctx.send(f"Bot does not have permission to modify {channel.name}.")
+            except discord.HTTPException as e:
+                await ctx.send(f"Failed to modify {channel.name}: {e}")
+
+        await ctx.send("All channels have been archived!")
+
+    async def archive_channel(self, channel: discord.TextChannel):
+        for role, overwrite in channel.overwrites.items():
+            if (isinstance(role, discord.Role) or isinstance(role, discord.Member)):
+                overwrite.send_messages = False
+                overwrite.send_messages_in_threads = False
+                overwrite.create_public_threads = False
+                overwrite.create_private_threads = False
+                overwrite.add_reactions = False
+                await channel.set_permissions(role, overwrite=overwrite, reason="Archiving channel")
+
+        default_overwrite = channel.overwrites_for(channel.guild.default_role)
+        default_overwrite.send_messages = False
+        default_overwrite.send_messages_in_threads = False
+        default_overwrite.create_public_threads = False
+        default_overwrite.create_private_threads = False
+        default_overwrite.add_reactions = False
+        await channel.set_permissions(channel.guild.default_role, overwrite=default_overwrite, reason="Archiving channel")
+
+    @commands.command()
+    @commands.is_owner()
     async def sync(self, ctx: commands.Context, guild_id: int = None):
         if ctx.author.id != cfg.owner_id:
             return
