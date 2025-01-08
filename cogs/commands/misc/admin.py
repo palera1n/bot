@@ -118,16 +118,14 @@ class Admin(commands.Cog):
             async with ctx.typing():
                 if guild_id:
                     guild = self.bot.get_guild(guild_id)
-                    synced = await self.bot.tree.sync(guild=guild)
-                    await ctx.send(f"Synced {len(synced)} commands to the guild with ID {guild_id}.")
+                    await self.bot.tree.sync(guild=guild)
                 else:
-                    synced = await self.bot.tree.sync()
-                    await ctx.send(f"Synced {len(synced)} commands globally.")
+                    await self.bot.tree.sync()
         except Exception as e:
             await ctx.send(f"An error occurred:\n```{e}```")
             logger.error(traceback.format_exc())
-
-
+        else:
+            await ctx.send("Synced commands!")
 
     @commands.command()
     @commands.is_owner()
