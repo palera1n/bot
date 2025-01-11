@@ -161,6 +161,15 @@ class Admin(commands.Cog):
                     await print("Bot does not have permission to add reactions")
                 except discord.HTTPException as e:
                     await print("Failed to add")
+        if message.content.lower().strip() == "husk this user":
+            if message.reference and isinstance(message.reference.resolved, discord.Message):
+                ref_message = message.reference.resolved
+                try:
+                    await ref_message.add_reaction("<:husk:1026532993923293184>")
+                except discord.Forbidden:
+                    await print("Bot does not have permission to add reactions")
+                except discord.HTTPException as e:
+                    await print("Failed to add")
         await self.bot.process_commands(message)
 
 async def setup(bot):
